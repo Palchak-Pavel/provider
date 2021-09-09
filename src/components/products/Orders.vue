@@ -4,7 +4,7 @@
       <div>
         <h3>Заказы</h3>
         <v-data-table
-          :items="orders"
+          :items="order"
           :headers="headers"
           hide-default-footer
         >
@@ -38,6 +38,7 @@ import { mapGetters, mapActions, mapState } from 'vuex'
 export default {
   data() {
     return {
+      order: [],
       columnDefs: null,
       rowData: null,
       modules: AllCommunityModules,
@@ -46,18 +47,18 @@ export default {
       ExcelExportModule,
       MasterDetailModule,
       ModuleRegistry,
-      headers:[
+      headers: [
         {
-          text: "Артикул",
-          value: "productCode"
+          text: 'Артикул',
+          value: 'productCode'
         },
         {
-          text: "Заказано",
-          value: "orderQuantity"
+          text: 'Заказано',
+          value: 'orderQuantity'
         },
         {
-          text: "Выполнено",
-          value: "completeQuantity"
+          text: 'Выполнено',
+          value: 'completeQuantity'
         }
       ]
     }
@@ -85,7 +86,7 @@ export default {
   },
 
   // async mounted() {
-  //   const res = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=3')
+  //   const res = await fetch('http://192.168.0.155:8080/plan/orders/get_notcompleteorders/3')
   //   const posts = await res.json()
   //   this.posts = posts
   //   console.log(this.posts)
@@ -95,22 +96,25 @@ export default {
     // allOrders() {
     //   return this.$store.getters.allOrders
     // }
-    ...mapState('orders', ['orders']),
+    ...mapGetters('orders', ['orders'])
     // ...mapGetters('orders', ['allOrders'])
   },
-   mounted() {
+  mounted() {
     // this.$store.dispatch('fetchOrders')
     // await this.fetchOrders()
-    console.log(this.orders)
+    console.log(this.order)
   },
 
   methods: {
-
+    async getOrders(e) {
+      const { data } = await this.$appService.getOrders(e)
+      this.order = data
+    }
     // async inOrders(){
     //    await this.$appService.get(this.localePath('/orders'+ {supplier_id: 3}))
     // }
 
-  },
+  }
   // created() {
   //   this.$router.replace('/orders')
   // }

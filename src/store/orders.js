@@ -23,19 +23,7 @@ export const mutations = {
 
 export const actions = {
   async fetchOrders({commit}, payload) {
-
-
     const {data} = await this.$appService.getOrders(payload);
-
     commit('SET_ORDERS', data)
   }
 }
-
-
-
-// export default {
-//   state,
-//   getters,
-//   actions,
-//   mutations
-// }

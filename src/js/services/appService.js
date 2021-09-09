@@ -7,7 +7,7 @@ export default class AppService {
   }
 
 
-  getOrders() {
-    return this.axios.get(this.url)
+  getOrders(supplierID) {
+    return this.axios.get(this.url + '/get_notcompleteorders/' + supplierID)
   }
 }
