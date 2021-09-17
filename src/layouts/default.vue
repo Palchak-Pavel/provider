@@ -18,8 +18,8 @@
         <template v-slot:prepend>
           <div class="pa-2" align="center">
             <v-img :src="require('../assets/images/logo.png')"></v-img>
-<!--            <div class="title font-weight-bold text-uppercase primary&#45;&#45;text">{{ product.name }}</div>-->
-<!--            <div class="overline grey&#45;&#45;text">{{ product.version }}</div>-->
+<!--            <div class="title font-weight-bold text-uppercase primary--text">{{ product.name }}</div>-->
+<!--            <div class="overline grey--text">{{ product.version }}</div>-->
             <span class="hidden-xs-only copyrights">Copyright © 2021 Goodfil LTD</span>
           </div>
         </template>

@@ -9,15 +9,16 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@ag-grid-enterprise/set-filter": "26.0.0",
     "@ag-grid-enterprise/all-modules": "^26.0.0",
     "@ag-grid-community/client-side-row-model": "~26.0.0",
     "@ag-grid-community/csv-export": "~26.0.0",
     "@ag-grid-enterprise/excel-export": "^26.0.0",
     "@ag-grid-enterprise/master-detail": "^26.0.0",
-    "@nuxtjs/google-gtag": "^1.0.4",
     "ag-grid-community": "^26.0.0",
     "ag-grid-vue": "^26.0.0",
-    "ag-grid-enterprise": "^25.1.0",
+    "ag-grid-enterprise": "^26.0.1",
+    "@nuxtjs/google-gtag": "^1.0.4",
     "@nuxtjs/axios": "^5.12.0",
     "animate.css": "^4.1.0",
     "apexcharts": "^3.19.2",

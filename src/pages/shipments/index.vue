@@ -1,13 +1,17 @@
 <template>
-<h3>Отгрузки</h3>
+  <client-only>
+    <div>
+      <Shipments/>
+    </div>
+  </client-only>
 </template>
 
 <script>
+import Shipments from '@/components/products/Shipments.vue'
 export default {
-  name: 'shipments'
+  components: {
+    Shipments
+  }
 }
+
 </script>
-
-<style scoped>
-
-</style>

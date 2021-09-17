@@ -6,7 +6,7 @@ export default {
     text: '',
     key: '',
     items: [
-      { icon: 'mdi-view-dashboard-outline', key: 'ecommerce.orders', text: 'Заказы',  link: '/' },
+      { icon: 'mdi-view-orders-outline', key: 'ecommerce.orders', text: 'Заказы',  link: '/' },
       { icon: 'mdi-file-outline', key: 'ecommerce.shipments', text: 'Отгрузки', link: '/shipments' },
       { icon: 'mdi-airplane-landing', key: 'ecommerce.leftovers', text: 'Остатки', link: '/leftovers' },
     ]

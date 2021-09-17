@@ -1,21 +1,24 @@
 <template>
-  <no-ssr>
-    <v-col>
-      <v-row>
-        <Orders/>
-      </v-row>
-    </v-col>
-  </no-ssr>
+  <client-only>
+    <div>
+      <Orders/>
+    </div>
+  </client-only>
 </template>
 
 <script>
 import Orders from '@/components/products/Orders.vue'
-// import { mapGetters, mapActions, mapState } from 'vuex'
+// import { mapState } from 'vuex'
+import { mapGetters, mapActions, mapState } from 'vuex'
 
 export default {
   components: {
-    Orders,
+    Orders
   },
+  computed:{
+    ...mapGetters('orders', ['orders'])
+  }
+
   // computed: {
   //   // allOrders() {
   //   //   return this.$store.getters.allOrders

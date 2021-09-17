@@ -20,14 +20,14 @@
             {{ 26358.49 | formatCurrency }}
           </div>
           <div class="primary--text text--lighten-1 mt-1">
-            {{ 7123.21 | formatCurrency }} {{ $t('dashboard.lastweek') }}
+            {{ 7123.21 | formatCurrency }} {{ $t('orders.lastweek') }}
           </div>
         </div>
 
         <v-spacer></v-spacer>
 
         <div class="px-2 pb-2">
-          <div class="title mb-1">{{ $t('dashboard.weeklySales') }}</div>
+          <div class="title mb-1">{{ $t('orders.weeklySales') }}</div>
           <div class="d-flex align-center">
             <div class="text-h4">
               {{ value | formatCurrency }}
@@ -67,7 +67,7 @@ function formatDate(date) {
 |---------------------------------------------------------------------
 |
 | Demo card component to be used to gather some ideas on how to build
-| your own dashboard component
+| your own orders component
 |
 */
 export default {
@@ -111,7 +111,7 @@ export default {
     },
     label: {
       type: String,
-      default: 'dashboard.sales'
+      default: 'orders.sales'
     },
     actionLabel: {
       type: String,

@@ -49,7 +49,7 @@ function formatDate(date) {
 |---------------------------------------------------------------------
 |
 | Demo card component to be used to gather some ideas on how to build
-| your own dashboard component
+| your own orders component
 |
 */
 export default {

@@ -1,9 +1,3 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import axios from 'axios'
-import { commit } from 'lodash/seq'
-
-// Vue.use(Vuex)
 
 export const state = () => ({
   orders: []
@@ -23,7 +17,7 @@ export const mutations = {
 
 export const actions = {
   async fetchOrders({commit}, payload) {
-    const {data} = await this.$appService.getOrders(payload);
+    const {data} = await this.$orderID.getOrders(payload);
     commit('SET_ORDERS', data)
   }
 }

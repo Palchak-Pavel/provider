@@ -174,7 +174,7 @@
     "@ag-grid-community/core" "~26.0.0"
     "@ag-grid-enterprise/core" "~26.0.0"
 
-"@ag-grid-enterprise/set-filter@~26.0.0":
+"@ag-grid-enterprise/set-filter@26.0.0", "@ag-grid-enterprise/set-filter@~26.0.0":
   version "26.0.0"
   resolved "https://registry.yarnpkg.com/@ag-grid-enterprise/set-filter/-/set-filter-26.0.0.tgz#c12f652fd53e529ea0bea6d8063f984309e310f8"
   integrity sha512-rKJrxPmxAFQhcYwFQcxfBPdrsBADApZfdQi1OapVjcJ8oauxr9kbuKeXcZ+lfZKxtuhItVNJvzsM8p2vMcQSJw==
@@ -1872,10 +1872,10 @@ ag-grid-community@^26.0.0:
   resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-26.0.0.tgz#2f26d4e89f5d2b8264065e8a542c42973e1cb306"
   integrity sha512-ewm640koOut+1nl+rDf/pUyM6/V2xbZ8T7VTzM0NZQNhn8TFG3grKs5iEzsKel8mwMWCSIO82xr356QNE11Hog==
 
-ag-grid-enterprise@^25.1.0:
-  version "25.3.0"
-  resolved "https://registry.yarnpkg.com/ag-grid-enterprise/-/ag-grid-enterprise-25.3.0.tgz#13f24b29a12b835b7e0afdbf8b7822cc161e02cc"
-  integrity sha512-eIC0kjPkDnS6nJEsueIT3HbPwr+vFunNiJY7DMEB5D4fAh7GEK9Ds0VMYtqZobLcKQgbqcJAH8ZhFRAHS+bIDA==
+ag-grid-enterprise@^26.0.1:
+  version "26.0.1"
+  resolved "https://registry.yarnpkg.com/ag-grid-enterprise/-/ag-grid-enterprise-26.0.1.tgz#e092319a5fc169e13b5e629bcd6c17cdb651a14c"
+  integrity sha512-LkB3pZ2VDHvFAJYq3bKCrYFWlCVs3L9YnqYD2olRYZ30aDmLMyWTf+ZwRgGQ2bdV7jujVYLVPHadYW6fhTtuww==
 
 ag-grid-vue@^26.0.0:
   version "26.0.0"

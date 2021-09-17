@@ -44,8 +44,8 @@ export default {
     { src: '~/plugins/apexcharts.js', mode: 'client' },
     { src: '~/plugins/clipboard.js', mode: 'client' },
     { src: '~/plugins/vue-shortkey.js', mode: 'client' },
-    {src: "~/plugins/ag_grid/ag-grid.orders.js", mode: 'client'},
-    {src: '~/plugins/services.js'},
+    {src: '~/plugins/ag_grid/ag-grid.orders.js', mode: 'client'},
+    {src: '~/plugins/order.js'},
 
     // // // filters
     { src: '~/filters/capitalize.js' },
@@ -100,5 +100,6 @@ export default {
 
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
+    transpile: ['ag-grid-vue']
   }
 }
