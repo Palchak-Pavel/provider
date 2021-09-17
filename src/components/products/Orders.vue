@@ -37,13 +37,14 @@ import { mapGetters, mapActions, mapState } from 'vuex'
 
 
 export default {
-  props: ['supplierID'],
+  //props: ['supplierID'],
 
   data() {
     return {
       order: [],
       rowData: null,
       rowSelectionType: 'single',
+
       // modules: AllCommunityModules,
       // ClientSideRowModelModule,
       // CsvExportModule,
@@ -87,57 +88,33 @@ export default {
           filter: true,
         }
       ],
-      // sideBar: null,
-      // localeText: {
-      //   applyFilter: 'OK',
-      //   cancelFilter: 'Cancel',
-      //   resetFilter: 'Clear Filter',
-      // },
+
       defaultColDef: {
         flex: 1,
         sortable: true,
         filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] }
-        // floatingFilter: true
       }
     }
   },
 
-  async mounted() {
-    const res = await fetch('http://192.168.0.155:8080/plan/orders/get_notcompleteorders/3')
-    const order = await res.json()
-    this.order = order
-    // console.log(this.order)
-    // await this.getOrders()
-
-  },
-
   computed: {
-    // allOrders() {
-    //   return this.$store.getters.allOrders
-    // }
-    // ...mapGetters('orders', ['orders'])
-    ...mapState('orders', ['orders'])
+    ...mapState('orders', ['orders', 'supplierID'])
   },
-  // mounted() {
-  //   // this.$store.dispatch('fetchOrders')
-  //   // await this.fetchOrders()
-  //   console.log(this.order)
-  // },
+  async mounted() {
+    await this.getOrders();
+  },
 
   methods: {
-    // async getOrders() {
-    //     const { data } = await this.$serviceID.getOrders(this.supplierID)
-    //     this.order = data
-    // }
-
+    async getOrders() {
+        const { data } = await this.$orderID.getOrders(this.supplierID)
+        this.order = data
+    }
   }
-
 }
 </script>
 
 <style>
 .ag-header-cell-label {
-  /*justify-content: center;*/
   font-weight: bold;
   font-size: 14px;
 }

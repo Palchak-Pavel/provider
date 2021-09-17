@@ -1,6 +1,7 @@
 
 export const state = () => ({
-  orders: []
+  orders: [],
+  supplierID: 3,
 })
 
 export const getters = {

@@ -1,7 +1,7 @@
 <template>
   <client-only>
     <div>
-      <Orders/>
+      <Orders />
     </div>
   </client-only>
 </template>
