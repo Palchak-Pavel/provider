@@ -46,6 +46,8 @@ export default {
     { src: '~/plugins/vue-shortkey.js', mode: 'client' },
     {src: '~/plugins/ag_grid/ag-grid.orders.js', mode: 'client'},
     {src: '~/plugins/order.js'},
+    {src: '~/plugins/shipments.js'},
+    {src: '~/plugins/leftovers.js'},
 
     // // // filters
     { src: '~/filters/capitalize.js' },

@@ -1,14 +1,14 @@
 <template>
   <div>
     <h3>Отгрузки</h3>
-    <div class="ma-2">
+    <div>
       <client-only>
-        <ag-grid-vue style="width: 85vw; height: 80vh;"
+        <v-btn class="mr-1 mb-1 blue lighten-1 white--text" @click="getShipments">Обновить таблицу</v-btn>
+        <ag-grid-vue style="width: 85vw; height: 75vh;"
                      class="ag-theme-balham"
                      :columnDefs="columnDefs"
                      :rowData="order"
                      :pagination="true"
-                     :paginationPageSize="15"
                      :defaultColDef="defaultColDef"
                      :rowSelection="rowSelectionType"
                      :enableCellTextSelection="true"
@@ -74,16 +74,29 @@ export default {
       }
     }
   },
-
-  async mounted() {
-    const res = await fetch('http://192.168.0.155:8080/plan/deliveries/get_notcompletedeliveries/3')
-    const order = await res.json()
-    this.order = order
-  },
-
   computed: {
-    ...mapGetters('orders', ['orders'])
+    ...mapState('orders', ['orders', 'supplierID'])
   },
+  async mounted() {
+    await this.getShipments();
+  },
+
+  methods: {
+    async getShipments() {
+      const { data } = await this.$shipmentsID.getShipments(this.supplierID)
+      this.order = data
+    }
+  }
+
+  // async mounted() {
+  //   const res = await fetch('http://192.168.0.155:8080/plan/deliveries/get_notcompletedeliveries/3')
+  //   const order = await res.json()
+  //   this.order = order
+  // },
+  //
+  // computed: {
+  //   ...mapGetters('orders', ['orders'])
+  // },
 }
 </script>
 

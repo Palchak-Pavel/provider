@@ -36,6 +36,7 @@
         :flat="isToolbarDetached"
         :light="toolbarTheme === 'light'"
         :dark="toolbarTheme === 'dark'"
+        dense
       >
         <v-spacer></v-spacer>
 

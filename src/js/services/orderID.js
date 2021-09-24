@@ -6,7 +6,6 @@ export default class OrderID {
     this.url = Endpoints.baseURL + "orders";
   }
 
-
   getOrders(supplierID) {
     return this.axios.get(this.url + '/get_notcompleteorders/' + supplierID)
   }

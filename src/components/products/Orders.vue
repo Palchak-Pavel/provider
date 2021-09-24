@@ -1,29 +1,29 @@
 <template>
-      <div>
-        <h3>Заказы</h3>
-        <div class="ma-2">
-          <client-only>
-          <ag-grid-vue style="width: 85vw; height: 80vh;"
-                       class="ag-theme-balham"
-                       :columnDefs="columnDefs"
-                       :rowData="order"
-                       :pagination="true"
-                       :paginationPageSize="15"
-                       :defaultColDef="defaultColDef"
-                       :rowSelection="rowSelectionType"
-                       :enableCellTextSelection="true"
-                       :header-height="50"
-                       :row-height="39"
-          >
-          </ag-grid-vue>
-          </client-only>
-        </div>
-      </div>
+  <div>
+    <h3>Заказы</h3>
+    <div>
+      <client-only>
+        <v-btn class="mr-1 mb-1 blue lighten-1 white--text" @click="getOrders">Обновить таблицу</v-btn>
+        <ag-grid-vue style="width: 87vw; height: 75vh;"
+                     class="ag-theme-balham"
+                     :columnDefs="columnDefs"
+                     :rowData="order"
+                     :pagination="true"
+                     :defaultColDef="defaultColDef"
+                     :rowSelection="rowSelectionType"
+                     :enableCellTextSelection="true"
+                     :header-height="50"
+                     :row-height="39"
+        >
+        </ag-grid-vue>
+      </client-only>
+    </div>
+  </div>
 
 </template>
 
 <script>
-import 'ag-grid-enterprise';
+import 'ag-grid-enterprise'
 // import { AgGridVue } from 'ag-grid-vue'
 // import { AllCommunityModules } from '@ag-grid-community/all-modules'
 // import { ModuleRegistry } from '@ag-grid-community/core'
@@ -34,7 +34,6 @@ import 'ag-grid-enterprise';
 // import { SetFilterModule } from '@ag-grid-enterprise/set-filter'
 import axios from 'axios'
 import { mapGetters, mapActions, mapState } from 'vuex'
-
 
 export default {
   //props: ['supplierID'],
@@ -54,38 +53,38 @@ export default {
       // AgGridVue,
       // SetFilterModule,
 
-
       columnDefs: [
         {
           headerName: 'Артикул ',
           field: 'productCode',
-          filter: 'agSetColumnFilter',
+          filter: 'agSetColumnFilter'
 
         },
         {
           headerName: 'Заказано, шт ',
           field: 'orderQuantity',
-          filter: 'agSetColumnFilter',
+          filter: 'agSetColumnFilter'
           // filterParams: { excelMode: 'windows' }
         },
         {
           headerName: 'Выполнено, шт ',
           field: 'completeQuantity',
-          filter: true,
+          filter: true
         },
-        { headerName: 'Цена',
+        {
+          headerName: 'Цена',
           field: 'price',
-          filter: true,
+          filter: true
         },
         {
           headerName: 'Дата создания ',
           field: 'creationDate',
-          filter: 'agDateColumnFilter',
+          filter: 'agDateColumnFilter'
         },
         {
           headerName: 'Срок готовности ',
           field: 'readinessDate',
-          filter: true,
+          filter: true
         }
       ],
 
@@ -101,16 +100,18 @@ export default {
     ...mapState('orders', ['orders', 'supplierID'])
   },
   async mounted() {
-    await this.getOrders();
+    await this.getOrders()
   },
 
   methods: {
     async getOrders() {
-        const { data } = await this.$orderID.getOrders(this.supplierID)
-        this.order = data
-    }
+      const { data } = await this.$orderID.getOrders(this.supplierID)
+      this.order = data
+    },
   }
+
 }
+
 </script>
 
 <style>
@@ -118,10 +119,12 @@ export default {
   font-weight: bold;
   font-size: 14px;
 }
-.ag-cell-wrapper{
+
+.ag-cell-wrapper {
   font-size: 13px;
 }
-.ag-standard-button{
+
+.ag-standard-button {
   border-radius: 4px;
   padding: 0 16px;
   min-width: 50px;
@@ -135,6 +138,7 @@ export default {
   line-height: 30px;
   transition: box-shadow 0.2s;
 }
+
 .ag-standard-button:hover,
 .ag-standard-button:focus {
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);

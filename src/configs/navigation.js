@@ -6,9 +6,9 @@ export default {
     text: '',
     key: '',
     items: [
-      { icon: 'mdi-view-orders-outline', key: 'ecommerce.orders', text: 'Заказы',  link: '/' },
-      { icon: 'mdi-file-outline', key: 'ecommerce.shipments', text: 'Отгрузки', link: '/shipments' },
-      { icon: 'mdi-airplane-landing', key: 'ecommerce.leftovers', text: 'Остатки', link: '/leftovers' },
+      { icon: 'mdi-star-outline', key: 'ecommerce.orders', text: 'Заказы',  link: '/' },
+      { icon: 'mdi-forklift', key: 'ecommerce.shipments', text: 'Отгрузки', link: '/shipments' },
+      { icon: 'mdi-scale-balance', key: 'ecommerce.leftovers', text: 'Остатки', link: '/leftovers' },
     ]
   }],
   //   {

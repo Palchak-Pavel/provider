@@ -1,19 +1,19 @@
 <template>
   <div>
     <h3>Остатки</h3>
-    <div class="ma-2">
+    <div>
       <client-only>
-        <ag-grid-vue style="width: 85vw; height: 80vh;"
+        <v-btn class="mr-1 mb-1 blue lighten-1 white--text" @click="getLeftovers">Обновить таблицу</v-btn>
+        <ag-grid-vue style="width: 85vw; height: 75vh;"
                      class="ag-theme-balham"
                      :columnDefs="columnDefs"
                      :rowData="order"
-                     :pagination="true"
-                     :paginationPageSize="15"
                      :defaultColDef="defaultColDef"
                      :rowSelection="rowSelectionType"
                      :enableCellTextSelection="true"
                      :header-height="50"
                      :row-height="39"
+                     :onCellValueChanged="updateLeftovers"
         >
         </ag-grid-vue>
       </client-only>
@@ -26,7 +26,7 @@ import 'ag-grid-enterprise';
 import { mapGetters, mapActions, mapState } from 'vuex'
 
 export default {
-  props: ['supplierID'],
+  // props: ['supplierID'],
 
   data() {
     return {
@@ -44,6 +44,9 @@ export default {
           headerName: 'Количество на складе, шт',
           field: 'storeQuantity',
           filter: 'agSetColumnFilter',
+          editable: true,
+          cellClass: "cell-wrap-text",
+          cellValueChanged: ""
         },
         {
           headerName: 'Цена ',
@@ -59,21 +62,38 @@ export default {
       defaultColDef: {
         flex: 1,
         sortable: true,
-        filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] }
-
+        filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] },
       }
     }
   },
-
-  async mounted() {
-    const res = await fetch('http://192.168.0.155:8080/plan/supplierrests/3')
-    const order = await res.json()
-    this.order = order
-  },
-
   computed: {
-    ...mapGetters('orders', ['orders'])
+    ...mapState('orders', ['orders', 'supplierID'])
   },
+  async mounted() {
+    await this.getLeftovers();
+  },
+
+  methods: {
+    async getLeftovers() {
+      const { data } = await this.$leftoversID.getLeftovers(this.supplierID)
+      this.order = data
+    },
+
+   async updateLeftovers(value) {
+      // handle the rest here
+    await this.$leftoversID.updateLeftovers(value)
+     let index = this.order.findIndex(x => x.supplierID === value.supplierID);
+     if (index !== -1)
+       this.order[index] = value;
+    }
+  }
+
+  // async mounted() {
+  //   const res = await fetch('http://192.168.0.155:8080/plan/supplierrests/3')
+  //   const order = await res.json()
+  //   this.order = order
+  // },
+  //
 }
 </script>
 
