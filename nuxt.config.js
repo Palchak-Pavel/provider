@@ -26,12 +26,14 @@ export default {
   // Global CSS (https://go.nuxtjs.dev/config-css)
   css: [
     '~/assets/scss/theme.scss',
+    '~/assets/scss/btn-style.scss',
     '../node_modules/ag-grid-community/dist/styles/ag-grid.css',
     '../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css',
     '../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css',
     '../node_modules/ag-grid-community/dist/styles/ag-theme-blue.css',
     '../node_modules/ag-grid-community/dist/styles/ag-theme-fresh.css',
     '../node_modules/ag-grid-community/dist/styles/ag-theme-material.css',
+
     // '@/node_modules/ag-grid-community/dist/styles/ag-grid.css',
     // '@/node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css'
 

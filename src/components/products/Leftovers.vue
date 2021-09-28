@@ -13,7 +13,8 @@
                      :enableCellTextSelection="true"
                      :header-height="50"
                      :row-height="39"
-                     :onCellValueChanged="updateLeftovers"
+                     :gridReady="onGridReady"
+                     :onCellEditingStopped="updateLeftovers"
         >
         </ag-grid-vue>
       </client-only>
@@ -60,6 +61,8 @@ export default {
       //   resetFilter: 'Clear Filter',
       // },
       defaultColDef: {
+        gridApi: null,
+        columnApi: null,
         flex: 1,
         sortable: true,
         filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] },
@@ -67,11 +70,12 @@ export default {
     }
   },
   computed: {
-    ...mapState('orders', ['orders', 'supplierID'])
+    ...mapState('orders', ['orders', 'supplierID']),
   },
   async mounted() {
     await this.getLeftovers();
   },
+
 
   methods: {
     async getLeftovers() {
@@ -79,12 +83,16 @@ export default {
       this.order = data
     },
 
-   async updateLeftovers(value) {
-      // handle the rest here
-    await this.$leftoversID.updateLeftovers(value)
-     let index = this.order.findIndex(x => x.supplierID === value.supplierID);
-     if (index !== -1)
-       this.order[index] = value;
+    onGridReady(params) {
+      this.gridApi = params.api;
+      this.gridColumnApi = params.columnApi;
+    },
+
+    async updateLeftovers(value) {
+      await this.$leftoversID.updateLeftovers(value)
+      let index = this.order.findIndex(x => x.storeQuantity === value.storeQuantity);
+      if (index !== -1)
+        this.order[index] = value;
     }
   }
 
@@ -98,29 +106,5 @@ export default {
 </script>
 
 <style>
-.ag-header-cell-label {
-  font-weight: bold;
-  font-size: 14px;
-}
-.ag-cell-wrapper{
-  font-size: 13px;
-}
-.ag-standard-button{
-  border-radius: 4px;
-  padding: 0 16px;
-  min-width: 50px;
-  height: 25px;
-  vertical-align: middle;
-  color: rgb(255, 255, 255);
-  background-color: rgb(33, 150, 243);
-  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 30px;
-  transition: box-shadow 0.2s;
-}
-.ag-standard-button:hover,
-.ag-standard-button:focus {
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 1px 10px 0 rgba(0, 0, 0, 0.12);
-}
+
 </style>
