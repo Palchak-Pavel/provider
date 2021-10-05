@@ -1,37 +1,35 @@
 <template>
-  <div>
-    <h3>Заказы</h3>
-    <div>
-      <client-only>
-        <v-btn class="mr-1 mb-1 blue lighten-1 white--text" @click="getOrders">Обновить таблицу</v-btn>
-        <ag-grid-vue style="width: 87vw; height: 75vh;"
-                     class="ag-theme-balham"
-                     :columnDefs="columnDefs"
-                     :rowData="order"
-                     :pagination="true"
-                     :defaultColDef="defaultColDef"
-                     :rowSelection="rowSelectionType"
-                     :enableCellTextSelection="true"
-                     :header-height="50"
-                     :row-height="39"
-        >
-        </ag-grid-vue>
-      </client-only>
-    </div>
-  </div>
+  <v-col cols="12">
+    <v-card flat>
+      <v-card-title>Заказы</v-card-title>
+      <v-card-text>
+        <client-only>
+          <v-btn class="mr-1 mb-1 blue lighten-1 white--text" @click="getOrders">Обновить таблицу</v-btn>
+
+          <!--        <div style="width: 86vw; height: 80vh" >-->
+          <v-card flat>
+            <ag-grid-vue style="width: 80vw; height: 70vh;"
+                         class="ag-theme-balham"
+                         :columnDefs="columnDefs"
+                         :rowData="order"
+                         :defaultColDef="defaultColDef"
+                         :rowSelection="rowSelectionType"
+                         :enableCellTextSelection="true"
+                         :header-height="50"
+                         :row-height="40"
+            >
+            </ag-grid-vue>
+          </v-card>
+          <!--        </div>-->
+        </client-only>
+      </v-card-text>
+    </v-card>
+  </v-col>
 
 </template>
 
 <script>
 import 'ag-grid-enterprise'
-// import { AgGridVue } from 'ag-grid-vue'
-// import { AllCommunityModules } from '@ag-grid-community/all-modules'
-// import { ModuleRegistry } from '@ag-grid-community/core'
-// import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model'
-// import { CsvExportModule } from '@ag-grid-community/csv-export'
-// import { ExcelExportModule } from '@ag-grid-enterprise/excel-export'
-// import { MasterDetailModule } from '@ag-grid-enterprise/master-detail'
-// import { SetFilterModule } from '@ag-grid-enterprise/set-filter'
 import axios from 'axios'
 import { mapGetters, mapActions, mapState } from 'vuex'
 
@@ -43,15 +41,6 @@ export default {
       order: [],
       rowData: null,
       rowSelectionType: 'single',
-
-      // modules: AllCommunityModules,
-      // ClientSideRowModelModule,
-      // CsvExportModule,
-      // ExcelExportModule,
-      // MasterDetailModule,
-      // ModuleRegistry,
-      // AgGridVue,
-      // SetFilterModule,
 
       columnDefs: [
         {
@@ -89,6 +78,7 @@ export default {
       ],
 
       defaultColDef: {
+        minWidth: 130,
         flex: 1,
         sortable: true,
         filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] }
@@ -107,7 +97,7 @@ export default {
     async getOrders() {
       const { data } = await this.$orderID.getOrders(this.supplierID)
       this.order = data
-    },
+    }
   }
 
 }
@@ -115,4 +105,5 @@ export default {
 </script>
 
 <style>
+
 </style>
