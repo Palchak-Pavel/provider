@@ -55,7 +55,7 @@
                          :header-height = "50"
                          :row-height = "39"
                          :gridReady = "onGridReady"
-                         :onCellEditingStopped = "updateLeftovers"
+                         @cell-value-changed = "updateLeftovers"
             >
             </ag-grid-vue>
           </v-card>
@@ -93,10 +93,12 @@ export default {
         {
           headerName: 'Количество на складе, шт',
           field: 'storeQuantity',
-          filter: 'agSetColumnFilter',
+          filter: 'agNumberColumnFilter',
           editable: true,
           cellClass: 'cell-wrap-text',
-          cellValueChanged: ''
+          valueParser: function (params) {
+            return Number(params.newValue);
+          },
         },
         {
           headerName: 'Цена ',
@@ -104,11 +106,7 @@ export default {
           filter: true
         }
       ],
-      // localeText: {
-      //   applyFilter: 'OK',
-      //   cancelFilter: 'Cancel',
-      //   resetFilter: 'Clear Filter',
-      // },
+
       defaultColDef: {
         gridApi: null,
         columnApi: null,
@@ -140,39 +138,30 @@ export default {
       this.gridColumnApi = params.columnApi
     },
 
-
-    // TODO: Не получается отправить данные на сервер после редактирования ячейки
-    //  field сохраняет изменения в самой таблице без отправки данных
-    //  В директиве использую событие onCellEditingStopped или cellValueChanged
-    //  Отправку пытаюсь сделать с помощью метода updateLeftovers через findIndex
-    //  В сервисе leftoversID функция называется updateLeftovers
-
     async updateLeftovers(value) {
-      await this.$leftoversID.updateLeftovers(value)
-      let index = this.order.findIndex(x => x.storeQuantity === value.storeQuantity)
-      if (index !== -1)
-        this.order[index] = value
+      let payload = {
+        supplierRestID: parseInt(value.data.supplierRestID),
+        storeQuantity: value.data.storeQuantity
+      };
+      await this.$leftoversID.updateLeftovers(payload);
     },
 
     async onFileChange(e) {
       if (e) {
-        let orderLines = await funcTarget(e, parseTwoColumns)
-        this.orderLines = orderLines.filter(x => x.productCount > 0)
-        await this.createLeftovers()
-      }
-    },
-
-    async createLeftovers() {
-      if (e) {
-        let items = await funcTarget(e, parseTwoColumns);
+        let parsedItems = await funcTarget(e, parseTwoColumns);
+        let items = parsedItems.map(x => ({
+          productCode: x.productCode,
+          storeQuantity: x.productCount
+        }));
         let payload = {
           supplierID: 3,
           supplierRestChanges: items,
           download: true
         };
         await this.$leftoversID.createLeftovers(payload);
+        await this.getLeftovers();
       }
-    }
+    },
   }
 
   // async mounted() {
@@ -185,5 +174,4 @@ export default {
 </script>
 
 <style>
-
 </style>

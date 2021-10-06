@@ -18,6 +18,6 @@ export default class LeftoversID {
   // }
 
   createLeftovers(payload) {
-    return this.axios.put(this.url + '/supplierrests/change_supplierrest', payload);
+    return this.axios.put(this.url + 'supplierrests/change_supplierrest', payload);
   }
 }
