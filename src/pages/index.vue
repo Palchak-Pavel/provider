@@ -8,31 +8,19 @@
 
 <script>
 import Orders from '@/components/products/Orders.vue'
-// import { mapState } from 'vuex'
-import { mapGetters, mapActions, mapState } from 'vuex'
+ import { mapState } from 'vuex'
 
 export default {
   components: {
     Orders
   },
   computed:{
-    ...mapGetters('orders', ['orders'])
-  }
+    ...mapState('orders', ['orders'])
+  },
 
-  // computed: {
-  //   // allOrders() {
-  //   //   return this.$store.getters.allOrders
-  //   // }
-  //   ...mapGetters('orders', ['allOrders'])
-  // },
-  // methods: {
-  //   ...mapActions('orders', ['fetchOrders'])
-  // },
-  // async mounted() {
-  //   // this.$store.dispatch('fetchOrders')
-  //   await this.fetchOrders()
-  //   console.log(this.allOrders)
-  // },
+  async fetch() {
+    await this.$store.dispatch('orders/fetchOrders');
+  }
 }
 
 </script>

@@ -5,13 +5,11 @@
       <v-card-text>
         <client-only>
           <v-btn class="mr-1 mb-1 blue lighten-1 white--text" @click="getOrders">Обновить таблицу</v-btn>
-
-          <!--        <div style="width: 86vw; height: 80vh" >-->
           <v-card flat>
             <ag-grid-vue style="width: 80vw; height: 70vh;"
                          class="ag-theme-balham"
                          :columnDefs="columnDefs"
-                         :rowData="order"
+                         :rowData="orders"
                          :defaultColDef="defaultColDef"
                          :rowSelection="rowSelectionType"
                          :enableCellTextSelection="true"
@@ -20,7 +18,6 @@
             >
             </ag-grid-vue>
           </v-card>
-          <!--        </div>-->
         </client-only>
       </v-card-text>
     </v-card>
@@ -30,18 +27,14 @@
 
 <script>
 import 'ag-grid-enterprise'
-import axios from 'axios'
-import { mapGetters, mapActions, mapState } from 'vuex'
+import { mapGetters} from 'vuex'
 
 export default {
-  //props: ['supplierID'],
 
   data() {
     return {
-      order: [],
       rowData: null,
       rowSelectionType: 'single',
-
       columnDefs: [
         {
           headerName: 'Артикул ',
@@ -53,7 +46,6 @@ export default {
           headerName: 'Заказано, шт ',
           field: 'orderQuantity',
           filter: 'agSetColumnFilter'
-          // filterParams: { excelMode: 'windows' }
         },
         {
           headerName: 'Выполнено, шт ',
@@ -87,23 +79,16 @@ export default {
   },
 
   computed: {
-    ...mapState('orders', ['orders', 'supplierID'])
-  },
-  async mounted() {
-    await this.getOrders()
+    ...mapGetters('orders', ['orders'])
   },
 
   methods: {
     async getOrders() {
-      const { data } = await this.$orderID.getOrders(this.supplierID)
-      this.order = data
+      await this.$store.dispatch('orders/fetchOrders');
     }
   }
-
 }
-
 </script>
 
 <style>
-
 </style>

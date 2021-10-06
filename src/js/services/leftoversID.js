@@ -13,9 +13,6 @@ export default class LeftoversID {
   updateLeftovers(payload){
     return this.axios.put(this.url + 'supplierrests/', payload);
   }
-  // updateLeftovers(payload){
-  //   return this.axios.put(this.url,payload);
-  // }
 
   createLeftovers(payload) {
     return this.axios.put(this.url + 'supplierrests/change_supplierrest', payload);
