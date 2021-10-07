@@ -22,7 +22,6 @@
       </v-card-text>
     </v-card>
   </v-col>
-
 </template>
 
 <script>
@@ -30,7 +29,6 @@ import 'ag-grid-enterprise'
 import { mapGetters} from 'vuex'
 
 export default {
-
   data() {
     return {
       rowData: null,

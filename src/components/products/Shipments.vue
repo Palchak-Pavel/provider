@@ -10,7 +10,7 @@
             <ag-grid-vue style = "width: 100%; height: 90%;"
                          class = "ag-theme-balham"
                          :columnDefs = "columnDefs"
-                         :rowData = "order"
+                         :rowData = "shipments"
                          :defaultColDef = "defaultColDef"
                          :rowSelection = "rowSelectionType"
                          :enableCellTextSelection = "true"
@@ -27,14 +27,11 @@
 
 <script>
 import 'ag-grid-enterprise'
-import { mapGetters, mapActions, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
-  props: ['supplierID'],
-
   data() {
     return {
-      order: [],
       rowData: null,
       rowSelectionType: 'single',
       columnDefs: [
@@ -42,7 +39,6 @@ export default {
           headerName: 'Артикул ',
           field: 'productCode',
           filter: 'agSetColumnFilter'
-
         },
         {
           headerName: 'Указание на отгрузку, шт',
@@ -65,42 +61,26 @@ export default {
           filter: true
         }
       ],
-      // localeText: {
-      //   applyFilter: 'OK',
-      //   cancelFilter: 'Cancel',
-      //   resetFilter: 'Clear Filter',
-      // },
+
       defaultColDef: {
         flex: 1,
         sortable: true,
         filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] }
-
       }
     }
   },
+
+  // TODO: не грузит данные в vuex. По прямой ссылке в api показывает пустой массив http://192.168.0.155:8080/plan/deliveries/get_notcompletedeliveries/3
+
   computed: {
-    ...mapState('orders', ['orders', 'supplierID'])
-  },
-  async mounted() {
-    await this.getShipments()
+    ...mapGetters('orders', ['shipments'])
   },
 
   methods: {
     async getShipments() {
-      const { data } = await this.$shipmentsID.getShipments(this.supplierID)
-      this.order = data
+      await this.$store.dispatch('orders/fetchShipments');
     }
   }
-
-  // async mounted() {
-  //   const res = await fetch('http://192.168.0.155:8080/plan/deliveries/get_notcompletedeliveries/3')
-  //   const order = await res.json()
-  //   this.order = order
-  // },
-  //
-  // computed: {
-  //   ...mapGetters('orders', ['orders'])
-  // },
 }
 </script>
 

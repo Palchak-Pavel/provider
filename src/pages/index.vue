@@ -8,7 +8,7 @@
 
 <script>
 import Orders from '@/components/products/Orders.vue'
- import { mapState } from 'vuex'
+import { mapState } from 'vuex'
 
 export default {
   components: {

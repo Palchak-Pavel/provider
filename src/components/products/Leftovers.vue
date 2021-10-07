@@ -48,7 +48,7 @@
             <ag-grid-vue style = "width: 80vw; height: 90vh;"
                          class = "ag-theme-balham"
                          :columnDefs = "columnDefs"
-                         :rowData = "order"
+                         :rowData = "leftovers"
                          :defaultColDef = "defaultColDef"
                          :rowSelection = "rowSelectionType"
                          :enableCellTextSelection = "true"
@@ -68,19 +68,15 @@
 
 <script>
 import 'ag-grid-enterprise'
-import { mapGetters, mapActions, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import { funcTarget, parseTwoColumns } from '~/js/parser'
 
 export default {
-  // props: ['supplierID'],
-
   data() {
     return {
       dialog: false,
       files: [],
-      order: [],
       selectedCustomerID: null,
-      orderLines: [],
       rowData: null,
       rowSelectionType: 'single',
       columnDefs: [
@@ -117,20 +113,13 @@ export default {
     }
   },
   computed: {
-    ...mapState('orders', ['orders', 'supplierID']),
+    ...mapGetters('orders', ['leftovers']),
 
-    allowCreate() {
-      return this.selectedCustomerID && this.orderLines.length > 0 && !this.orderNum
-    }
-  },
-  async mounted() {
-    await this.getLeftovers()
   },
 
   methods: {
     async getLeftovers() {
-      const { data } = await this.$leftoversID.getLeftovers(this.supplierID)
-      this.order = data
+      await this.$store.dispatch('orders/fetchLeftovers');
     },
 
     onGridReady(params) {
