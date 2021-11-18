@@ -36,7 +36,7 @@
 
       <v-divider class="my-1"></v-divider>
 
-      <v-list-item :to="localePath('/auth/signin')">
+      <v-list-item @click="logout">
         <v-list-item-icon>
           <v-icon small>mdi-logout-variant</v-icon>
         </v-list-item-icon>
@@ -62,6 +62,12 @@ export default {
   data() {
     return {
       menu: config.toolbar.user
+    }
+  },
+  methods: {
+    async logout() {
+      await this.$auth.logout();
+      await this.$router.push('/auth/signin');
     }
   }
 }

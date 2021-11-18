@@ -1,17 +1,17 @@
 <template>
   <v-col cols = "12">
     <v-card flat>
-      <v-card-title>Остатки</v-card-title>
+      <v-card-title>{{ $t('ecommerce.leftovers') }}</v-card-title>
       <v-card-text>
         <client-only>
-          <v-btn class = "mr-1 mb-1 blue lighten-1 white--text" @click = "getLeftovers">Обновить таблицу</v-btn>
+          <v-btn class = "mr-1 mb-1 blue lighten-1 white--text" @click = "getLeftovers">{{ $t('common.refreshTable') }}</v-btn>
           <v-btn
               class = "mr-1 mb-1 blue lighten-1 white--text"
               color = "primary"
               dark
               @click = "dialog = true"
           >
-            Загрузить файл
+            {{ $t('common.uploadFile') }}
           </v-btn>
 
           <v-dialog
@@ -54,7 +54,6 @@
                          :enableCellTextSelection = "true"
                          :header-height = "50"
                          :row-height = "39"
-                         :gridReady = "onGridReady"
                          @cell-value-changed = "updateLeftovers"
             >
             </ag-grid-vue>
@@ -81,13 +80,13 @@ export default {
       rowSelectionType: 'single',
       columnDefs: [
         {
-          headerName: 'Артикул ',
+          headerName: `${this.$t('catalog.productCode')}`,
           field: 'productCode',
           filter: 'agSetColumnFilter'
 
         },
         {
-          headerName: 'Количество на складе, шт',
+          headerName: `${this.$t('catalog.storeQuantity')}`,
           field: 'storeQuantity',
           filter: 'agNumberColumnFilter',
           editable: true,
@@ -97,7 +96,7 @@ export default {
           },
         },
         {
-          headerName: 'Цена ',
+          headerName: `${this.$t('ecommerce.price')}`,
           field: 'price',
           filter: true
         }
@@ -122,10 +121,10 @@ export default {
       await this.$store.dispatch('orders/fetchLeftovers');
     },
 
-    onGridReady(params) {
-      this.gridApi = params.api
-      this.gridColumnApi = params.columnApi
-    },
+    // onGridReady(params) {
+    //   this.gridApi = params.api
+    //   this.gridColumnApi = params.columnApi
+    // },
 
     async updateLeftovers(value) {
       let payload = {

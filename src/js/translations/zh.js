@@ -9,7 +9,9 @@ export default {
     'faq': '常问问题',
     'contact': '联系我们',
     'tos': '服务条款',
-    'policy': '隐私政策'
+    'policy': '隐私政策',
+    'refreshTable': '刷新表',
+    'uploadFile': '上传文件'
   },
   'board': {
     'titlePlaceholder': '输入此卡的标题',
@@ -144,10 +146,12 @@ export default {
     'discount': '折扣',
     'subtotal': '小计',
     'continue': '继续购物',
-    'checkout': '查看'
+    'checkout': '查看',
+    'leftovers': '剩菜剩饭',
+    'shipments': '出货量'
   },
   'menu': {
-    'search': '搜索（按“ Ctrl + /”进行聚焦）',
+    'search': '搜索...（输入 GOODWILL、OEM 或其他品牌编号',
     'dashboard': '仪表板',
     'logout': '登出',
     'profile': '个人资料',
@@ -235,7 +239,8 @@ export default {
     },
     'fileInput': {
       'counter': '{0}个文件',
-      'counterSize': '{0}个文件（共{1}个）'
+      'counterSize': '{0}个文件（共{1}个）',
+
     },
     'timePicker': {
       'am': 'AM',

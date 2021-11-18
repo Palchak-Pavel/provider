@@ -1,20 +1,72 @@
 <template>
-  <v-col cols="12">
+  <v-col cols = "12">
     <v-card flat>
-      <v-card-title>Заказы</v-card-title>
+      <v-card-title>{{ $t('dashboard.orders') }}</v-card-title>
       <v-card-text>
         <client-only>
-          <v-btn class="mr-1 mb-1 blue lighten-1 white--text" @click="getOrders">Обновить таблицу</v-btn>
+          <v-btn class = "mr-1 mb-1 blue lighten-1 white--text" @click = "getOrders">{{
+              $t('common.refreshTable')
+                                                                                     }}
+          </v-btn>
+
+          <v-btn
+              class = "mr-1 mb-1 blue lighten-1 white--text"
+              color = "primary"
+              dark
+              @click = "dialog = true"
+          >
+            {{ $t('common.uploadFile') }}
+          </v-btn>
+
+          <v-dialog
+              v-model = "dialog"
+              max-width = "500px"
+          >
+            <v-card>
+              <v-file-input
+                  v-model = "files"
+                  color = "blue lighten-1"
+                  class = "pl-2 pt-2 pr-2"
+                  label = "Выберите файл"
+                  prepend-icon = "mdi-paperclip"
+                  outlined
+                  :show-size = "1000"
+                  @change = "onFileChange"
+              >
+              </v-file-input>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                    class = "ml-1 mb-1 blue lighten-1 white--text"
+                    color = "primary"
+                    @click = "dialog = false"
+                >
+                  Закрыть
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+
+          <v-btn @click = "'AG_GRID_LOCALE_RU'" color = "primary">
+            RU
+          </v-btn>
+          <v-btn @click = "'AG_GRID_LOCALE_EN'" color = "primary">
+            EN
+          </v-btn>
+
           <v-card flat>
-            <ag-grid-vue style="width: 80vw; height: 70vh;"
-                         class="ag-theme-balham"
-                         :columnDefs="columnDefs"
-                         :rowData="orders"
-                         :defaultColDef="defaultColDef"
-                         :rowSelection="rowSelectionType"
-                         :enableCellTextSelection="true"
-                         :header-height="50"
-                         :row-height="40"
+            <ag-grid-vue style = "width: 80vw; height: 70vh;"
+                         class = "ag-theme-balham"
+                         :columnDefs = "columnDefs"
+                         :rowData = "orders"
+                         :defaultColDef = "defaultColDef"
+                         :rowSelection = "rowSelectionType"
+                         :enableCellTextSelection = "true"
+                         :header-height = "50"
+                         :row-height = "40"
+                         :localeText = "localeText"
+                         :sideBar = "sideBar"
             >
             </ag-grid-vue>
           </v-card>
@@ -26,44 +78,58 @@
 
 <script>
 import 'ag-grid-enterprise'
-import { mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
+import { funcTarget, parseTwoColumns } from '~/js/parser'
+import { AG_GRID_LOCALE_RU } from '../../js/translations/ruAgGrid'
 
 export default {
   data() {
     return {
+      dialog: false,
+      files: [],
+      sideBar: null,
+      localeText: null,
       rowData: null,
       rowSelectionType: 'single',
+      moment: null,
+      cellRenderer: null,
       columnDefs: [
         {
-          headerName: 'Артикул ',
+          headerName: `${this.$t('catalog.productCode')}`,
           field: 'productCode',
           filter: 'agSetColumnFilter'
 
         },
         {
-          headerName: 'Заказано, шт ',
+          headerName: `${this.$t('ecommerce.orderQuantity')}`,
           field: 'orderQuantity',
           filter: 'agSetColumnFilter'
         },
         {
-          headerName: 'Выполнено, шт ',
+          headerName: `${this.$t('ecommerce.completeQuantity')}`,
           field: 'completeQuantity',
           filter: true
         },
         {
-          headerName: 'Цена',
+          headerName: `${this.$t('ecommerce.price')}`,
           field: 'price',
           filter: true
         },
         {
-          headerName: 'Дата создания ',
+          headerName: `${this.$t('catalog.creationDate')}`,
           field: 'creationDate',
-          filter: 'agDateColumnFilter'
+          filter: 'agDateColumnFilter',
+          cellRenderer: (data) => {
+            return data.value ? (new Date(data.value)).toLocaleDateString() : ''
+          }
         },
         {
-          headerName: 'Срок готовности ',
+          headerName: `${this.$t('catalog.readinessDate')}`,
           field: 'readinessDate',
-          filter: true
+          filter: true,
+          cellRenderer: (data) => {
+            return data.value ? (new Date(data.value)).toLocaleDateString() : ''
+          }
         }
       ],
 
@@ -76,14 +142,46 @@ export default {
     }
   },
 
+  beforeMount() {
+    this.localeText = AG_GRID_LOCALE_RU
+// this.sideBar =true;
+
+    // this.localeTextFunc = (key, defaultValue) => {
+    //   // const data = AG_GRID_LOCALE_RU;
+    //   // return data === key ? defaultValue : data;
+    //
+    //   // const gridKey = 'AG_GRID_LOCALE_RU' + key;
+    //   //
+    //   // // look the value up using an application wide service
+    //   // return applicationLocaleService(gridKey);
+    //   // return defaultValue ? AG_GRID_LOCALE_RU : '';
+    // };
+  },
   computed: {
     ...mapGetters('orders', ['orders'])
   },
 
   methods: {
     async getOrders() {
-      await this.$store.dispatch('orders/fetchOrders');
-    }
+      await this.$store.dispatch('orders/fetchOrders')
+    },
+
+    async onFileChange(e) {
+      if (e) {
+        let parsedItems = await funcTarget(e, parseTwoColumns);
+        let items = parsedItems.map(x => ({
+          productCode: x.productCode,
+          storeQuantity: x.productCount
+        }));
+        let payload = {
+          supplierID: 3,
+          supplierRestChanges: items,
+          download: true
+        };
+        await this.$leftoversID.createLeftovers(payload);
+        await this.getLeftovers();
+      }
+    },
   }
 }
 </script>

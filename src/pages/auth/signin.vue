@@ -89,6 +89,7 @@
 | Sign in template for user authentication into the application
 |
 */
+import { mapGetters } from 'vuex';
 export default {
   layout: 'auth',
   data() {
@@ -128,14 +129,67 @@ export default {
       }
     }
   },
+
+  computed: {
+    ...mapGetters('auth-roles', ['adminRoles', 'managerRoles', 'storeAdminRoles'])
+  },
+
   methods: {
-    submit() {
-      if (this.$refs.form.validate()) {
-        this.isLoading = true
-        this.isSignInDisabled = true
-        this.signIn(this.email, this.password)
+    async submit() {
+      try {
+        await this.$auth.loginWith("local", {
+          data: {
+            login: this.login,
+            password: this.password
+          }
+        });
+        localStorage.removeItem("sales_reports_storage");
+        if(this.$auth.loggedIn && this.adminRoles.indexOf(this.$auth.user.role) !== -1 ){
+          await Promise.all([
+            this.$store.dispatch('catalog/fetchBrands'),
+            this.$store.dispatch('catalog/fetchCategories'),
+            this.$store.dispatch('catalog/fetchForms'),
+            this.$store.dispatch('catalog/fetchProductsAutocomplete'),
+            this.$store.dispatch('catalog/fetchManufactors'),
+            this.$store.dispatch('persons/fetchDrivers'),
+            this.$store.dispatch('persons/fetchEmployees'),
+            this.$store.dispatch('persons/fetchStoreEmployees'),
+            this.$store.dispatch('sales/customers/fetchCustomers'),
+            this.$store.dispatch('purchasing/fetchSuppliers'),
+            this.$store.dispatch('sales/webPortals/fetchPortals'),
+            this.$store.dispatch('pricing/fetchPriceRanges'),
+            this.$store.dispatch('statistics/sales/fetchSales'),
+            this.$store.dispatch('statistics/orders/fetchOrders'),
+            this.$store.dispatch('pricing/fetchUsd')
+          ]);
+        }
+        else if(this.$auth.loggedIn && this.managerRoles.indexOf(this.$auth.user.role) !== -1) {
+          await Promise.all([
+            this.$store.dispatch('sales/customers/fetchCustomers'),
+            this.$store.dispatch('statistics/sales/fetchSales'),
+            this.$store.dispatch('statistics/orders/fetchOrders'),
+            this.$store.dispatch('statistics/sales/fetchSales'),
+            this.$store.dispatch('statistics/orders/fetchOrders'),
+            this.$store.dispatch('pricing/fetchUsd')
+          ]);
+        }
+        else if(this.$auth.loggedIn && this.storeAdminRoles.indexOf(this.$auth.user.role) !== -1) {
+          await Promise.all([
+            this.$store.dispatch('persons/fetchDrivers'),
+            this.$store.dispatch('persons/fetchStoreEmployees'),
+            this.$store.dispatch('pricing/fetchUsd')
+          ]);
+          await this.$router.push('/store/assemblies');
+        }
+        else if(this.$auth.loggedIn && this.$auth.user.role === 'buh') {
+          await this.$store.dispatch('pricing/fetchUsd');
+          await this.$router.push('/store/deliveries');
+        }
+      }catch (error) {
+        this.errorMessages = 'Неверный логин или пароль';
       }
     },
+
     signIn(email, password) {
       this.$router.push('/')
     },

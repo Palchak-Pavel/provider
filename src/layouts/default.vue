@@ -42,6 +42,8 @@
 
         <toolbar-language/>
 
+        <toolbar-user/>
+
       </v-app-bar>
 
       <v-main>

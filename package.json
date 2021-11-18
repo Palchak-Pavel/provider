@@ -9,6 +9,7 @@
     "generate": "nuxt generate"
   },
   "dependencies": {
+    "@nuxtjs/auth-next": "^5.0.0-1595976864.509d9d6",
     "@ag-grid-enterprise/set-filter": "26.0.0",
     "@ag-grid-enterprise/all-modules": "^26.0.0",
     "@ag-grid-community/client-side-row-model": "~26.0.0",

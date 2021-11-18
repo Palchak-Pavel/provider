@@ -80,7 +80,7 @@ export default {
       },
       locales: availableLocales,
       lazy: true,
-      langDir: 'translations/',
+      langDir: 'js/translations/',
       defaultLocale: locale,
       vueI18n: {
         fallbackLocale
@@ -92,6 +92,7 @@ export default {
   modules: [
     '@nuxtjs/google-gtag',
     '@nuxtjs/axios',
+    '@nuxtjs/auth-next',
   ],
   axios: {
     baseURL: "http://192.168.0.155:8080"
@@ -105,5 +106,32 @@ export default {
   // Build Configuration (https://go.nuxtjs.dev/config-build)
   build: {
     transpile: ['ag-grid-vue']
-  }
+  },
+
+  auth: {
+    strategies: {
+      local: {
+        token: {
+          property: 'access_token',
+          // required: true,
+          type: 'Bearer'
+        },
+        user: {
+          property: false, // <--- Default "user"
+          autoFetch: true
+        },
+        endpoints: {
+          login: { url: '/auth/account', method: 'post' },
+          logout: false,
+          user: { url: "/auth/account", method: 'get'}
+        }
+      }
+    },
+    redirect: {
+      login: '/auth/signin',
+      logout: '/',
+      callback: '/login',
+      home: '/'
+    }
+  },
 }

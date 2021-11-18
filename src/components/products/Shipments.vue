@@ -1,10 +1,10 @@
 <template>
   <v-col cols = "12">
     <v-card flat>
-      <v-card-title>Отгрузки</v-card-title>
+      <v-card-title>{{ $t('ecommerce.shipments') }}</v-card-title>
       <v-card-text>
         <client-only>
-          <v-btn class = "mr-1 mb-1 blue lighten-1 white--text" @click = "getShipments">Обновить таблицу</v-btn>
+          <v-btn class = "mr-1 mb-1 blue lighten-1 white--text" @click = "getShipments">{{ $t('common.refreshTable') }}</v-btn>
 
           <v-card flat style = "width: 81.5vw; height: 80vh">
             <ag-grid-vue style = "width: 100%; height: 90%;"
@@ -36,29 +36,35 @@ export default {
       rowSelectionType: 'single',
       columnDefs: [
         {
-          headerName: 'Артикул ',
+          headerName: `${this.$t('catalog.productCode')}`,
           field: 'productCode',
           filter: 'agSetColumnFilter'
         },
         {
-          headerName: 'Указание на отгрузку, шт',
+          headerName: `${this.$t('ecommerce.deliveryQuantity')}`,
           field: 'deliveryQuantity',
           filter: 'agSetColumnFilter'
         },
         {
-          headerName: 'Выполнено, шт ',
+          headerName: `${this.$t('ecommerce.completeQuantity')}`,
           field: 'completeQuantity',
           filter: true
         },
         {
-          headerName: 'Дата создания ',
+          headerName: `${this.$t('catalog.creationDate')}`,
           field: 'creationDate',
-          filter: 'agDateColumnFilter'
+          filter: 'agDateColumnFilter',
+          cellRenderer: (data) => {
+            return data.value ? (new Date(data.value)).toLocaleDateString() : '';
+          },
         },
         {
-          headerName: 'Срок отгрузки',
+          headerName: `${this.$t('catalog.dueDate')}`,
           field: 'dueDate',
-          filter: true
+          filter: true,
+          cellRenderer: (data) => {
+            return data.value ? (new Date(data.value)).toLocaleDateString() : '';
+          },
         }
       ],
 
@@ -69,8 +75,6 @@ export default {
       }
     }
   },
-
-  // TODO: не грузит данные в vuex. По прямой ссылке в api показывает пустой массив http://192.168.0.155:8080/plan/deliveries/get_notcompletedeliveries/3
 
   computed: {
     ...mapGetters('orders', ['shipments'])
