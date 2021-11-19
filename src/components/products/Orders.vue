@@ -11,7 +11,6 @@
 
           <v-btn
               class = "mr-1 mb-1 blue lighten-1 white--text"
-              color = "primary"
               dark
               @click = "dialog = true"
           >
@@ -39,7 +38,6 @@
                 <v-spacer></v-spacer>
                 <v-btn
                     class = "ml-1 mb-1 blue lighten-1 white--text"
-                    color = "primary"
                     @click = "dialog = false"
                 >
                   Закрыть
