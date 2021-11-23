@@ -46,6 +46,7 @@
                   </v-card>
                </v-dialog>
 
+                <!-- События должны ссылаться на методы/функции, а не на поля из data. Так делать не надо. -->
                <v-btn @click = "localeTextFunc" color = "primary">
                   RU
                </v-btn>
@@ -60,7 +61,7 @@
                                :enableCellTextSelection = "true"
                                :header-height = "50"
                                :row-height = "40"
-                               :localeTextFunc = "localeTextFunc"
+                               :localeText = "agGridLocale"
                                :sideBar = "sideBar"
                   >
                   </ag-grid-vue>
@@ -84,6 +85,7 @@ export default {
          dialog: false,
          files: [],
          sideBar: null,
+         //TODO: удалить поля localeText и localeTextFunc
          localeTextFunc: null,
          localeText: null,
          rowData: null,
@@ -140,7 +142,9 @@ export default {
    },
 
    //TODO: Не получается поставить локализацию фильтров и контекстного меню вместе со всем приложением
-   beforeMount() {
+
+    //TODO: удалить beforeMount
+    beforeMount() {
       // this.localeText = AG_GRID_LOCALE_RU
       this.localeTextFunc= (key, defaultValue) => AG_GRID_LOCALE_RU[key] || AG_GRID_LOCALE_EN
 // this.sideBar =true;
@@ -157,13 +161,21 @@ export default {
       // };
    },
    computed: {
-      ...mapGetters('orders', ['orders'])
+      ...mapGetters('orders', ['orders']),
+
+       // TODO: сделать computed для locale и передать его в localeText
+       // Правильным решением будет убрать это свойство в store, чтобы не высчитывать на каждой странице
+       agGridLocale() {
+          return this.$vuetify.lang.current === 'en' ? AG_GRID_LOCALE_EN: AG_GRID_LOCALE_RU;
+       }
    },
 
    methods: {
       async getOrders() {
          await this.$store.dispatch('orders/fetchOrders')
       },
+
+       // TODO: добавить метод обновления заказа.
 
       async onFileChange(e) {
          if (e) {

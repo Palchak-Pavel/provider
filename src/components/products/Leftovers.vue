@@ -118,7 +118,8 @@ export default {
     },
 
      //TODO: не отправляются данные из редактируемой ячейки на сервер
-
+     //  исправил в api, должно работать
+     //TODO: добавить валидацию: значение в ячейке не может быть меньще 0
     async updateLeftovers(value) {
       let payload = {
         supplierRestID: parseInt(value.data.supplierRestID),
@@ -128,7 +129,7 @@ export default {
     },
 
      //TODO: не отправляются данные из парсера на сервер
-
+    // ждать доработку
     async onFileChange(e) {
       if (e) {
         let parsedItems = await funcTarget(e, parseTwoColumns);
