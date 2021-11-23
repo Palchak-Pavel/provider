@@ -137,10 +137,10 @@ export default {
          callback: '/login',
          home: '/'
       },
+      //TODO: показывает страницы без авторизации
       router: {
          prefetchLinks: false,
-         middleware: ['auth'],
-         base: !isDev ? '/crm' : ''
+         middleware: ['auth']
       }
    }
 }

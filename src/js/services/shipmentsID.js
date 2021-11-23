@@ -6,7 +6,7 @@ export default class ShipmentsID {
     this.url = Endpoints.baseURL + "deliveries";
   }
 
-  getShipments(supplierID) {
-    return this.axios.get(this.url + '/get_notcompletedeliveries/' + supplierID)
+  getShipments() {
+    return this.axios.get(this.url)
   }
 }

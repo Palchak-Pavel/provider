@@ -139,6 +139,7 @@ export default {
       }
    },
 
+   //TODO: Не получается поставить локализацию фильтров и контекстного меню вместе со всем приложением
    beforeMount() {
       // this.localeText = AG_GRID_LOCALE_RU
       this.localeTextFunc= (key, defaultValue) => AG_GRID_LOCALE_RU[key] || AG_GRID_LOCALE_EN

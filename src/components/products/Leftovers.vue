@@ -73,7 +73,6 @@ export default {
     return {
       dialog: false,
       files: [],
-      selectedCustomerID: null,
       rowData: null,
       rowSelectionType: 'single',
       columnDefs: [
@@ -111,7 +110,6 @@ export default {
   },
   computed: {
     ...mapGetters('orders', ['leftovers']),
-
   },
 
   methods: {
@@ -119,10 +117,7 @@ export default {
       await this.$store.dispatch('orders/fetchLeftovers');
     },
 
-    // onGridReady(params) {
-    //   this.gridApi = params.api
-    //   this.gridColumnApi = params.columnApi
-    // },
+     //TODO: не отправляются данные из редактируемой ячейки на сервер
 
     async updateLeftovers(value) {
       let payload = {
@@ -131,6 +126,8 @@ export default {
       };
       await this.$leftoversID.updateLeftovers(payload);
     },
+
+     //TODO: не отправляются данные из парсера на сервер
 
     async onFileChange(e) {
       if (e) {
@@ -149,13 +146,6 @@ export default {
       }
     },
   }
-
-  // async mounted() {
-  //   const res = await fetch('http://192.168.0.155:8080/plan/supplierrests/3')
-  //   const order = await res.json()
-  //   this.order = order
-  // },
-  //
 }
 </script>
 

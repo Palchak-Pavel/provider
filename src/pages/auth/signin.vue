@@ -1,35 +1,31 @@
 <template>
   <div>
     <v-card class="text-center pa-1">
-      <v-card-title class="justify-center display-1 mb-2">Welcome</v-card-title>
-      <v-card-subtitle>Sign in to your account</v-card-subtitle>
+      <v-card-title class="justify-center display-1 mb-2">Добро пожаловать</v-card-title>
+      <v-card-subtitle>Пожалуйста авторизуйтесь</v-card-subtitle>
 
       <!-- sign in form -->
       <v-card-text>
         <v-form ref="form" v-model="isFormValid" lazy-validation>
           <v-text-field
             v-model="email"
-            :rules="[rules.required]"
             :validate-on-blur="false"
             :error="error"
             :label="$t('login.email')"
             name="email"
             outlined
             @keyup.enter="submit"
-            @change="resetErrors"
           ></v-text-field>
 
           <v-text-field
             v-model="password"
             :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[rules.required]"
             :type="showPassword ? 'text' : 'password'"
             :error="error"
             :error-messages="errorMessages"
             :label="$t('login.password')"
             name="password"
             outlined
-            @change="resetErrors"
             @keyup.enter="submit"
             @click:append="showPassword = !showPassword"
           ></v-text-field>
@@ -43,40 +39,40 @@
             @click="submit"
           >{{ $t('login.button') }}</v-btn>
 
-          <div class="caption font-weight-bold text-uppercase my-3">{{ $t('login.orsign') }}</div>
+<!--          <div class="caption font-weight-bold text-uppercase my-3">{{ $t('login.orsign') }}</div>-->
 
           <!-- external providers list -->
-          <v-btn
-            v-for="provider in providers"
-            :key="provider.id"
-            :loading="provider.isLoading"
-            :disabled="isSignInDisabled"
-            class="mb-2 primary lighten-2 primary--text text--darken-3"
-            block
-            x-large
-            to="/"
-          >
-            <v-icon small left>mdi-{{ provider.id }}</v-icon>
-            {{ provider.label }}
-          </v-btn>
+<!--          <v-btn-->
+<!--            v-for="provider in providers"-->
+<!--            :key="provider.id"-->
+<!--            :loading="provider.isLoading"-->
+<!--            :disabled="isSignInDisabled"-->
+<!--            class="mb-2 primary lighten-2 primary&#45;&#45;text text&#45;&#45;darken-3"-->
+<!--            block-->
+<!--            x-large-->
+<!--            to="/"-->
+<!--          >-->
+<!--            <v-icon small left>mdi-{{ provider.id }}</v-icon>-->
+<!--            {{ provider.label }}-->
+<!--          </v-btn>-->
 
-          <div v-if="errorProvider" class="error--text">{{ errorProviderMessages }}</div>
+<!--          <div v-if="errorProvider" class="error&#45;&#45;text">{{ errorProviderMessages }}</div>-->
 
-          <div class="mt-5">
-            <router-link :to="localePath('/auth/forgot-password')">
-              {{ $t('login.forgot') }}
-            </router-link>
-          </div>
+<!--          <div class="mt-5">-->
+<!--            <router-link :to="localePath('/auth/forgot-password')">-->
+<!--              {{ $t('login.forgot') }}-->
+<!--            </router-link>-->
+<!--          </div>-->
         </v-form>
       </v-card-text>
     </v-card>
 
-    <div class="text-center mt-6">
-      {{ $t('login.noaccount') }}
-      <router-link :to="localePath('/auth/signup')" class="font-weight-bold">
-        {{ $t('login.create') }}
-      </router-link>
-    </div>
+<!--    <div class="text-center mt-6">-->
+<!--      {{ $t('login.noaccount') }}-->
+<!--      <router-link :to="localePath('/auth/signup')" class="font-weight-bold">-->
+<!--        {{ $t('login.create') }}-->
+<!--      </router-link>-->
+<!--    </div>-->
   </div>
 </template>
 
@@ -110,83 +106,24 @@ export default {
       errorProvider: false,
       errorProviderMessages: '',
 
-      // show password field
+      // // show password field
       showPassword: false,
-
-      providers: [{
-        id: 'google',
-        label: 'Google',
-        isLoading: false
-      }, {
-        id: 'facebook',
-        label: 'Facebook',
-        isLoading: false
-      }],
-
-      // input rules
-      rules: {
-        required: (value) => (value && Boolean(value)) || 'Required'
-      }
     }
-  },
-
-  computed: {
-    ...mapGetters('auth-roles', ['adminRoles', 'managerRoles', 'storeAdminRoles'])
   },
 
   methods: {
     async submit() {
-      try {
-        await this.$auth.loginWith("local", {
-          data: {
-            login: this.login,
-            password: this.password
-          }
-        });
-        localStorage.removeItem("sales_reports_storage");
-        if(this.$auth.loggedIn && this.adminRoles.indexOf(this.$auth.user.role) !== -1 ){
-          await Promise.all([
-            this.$store.dispatch('catalog/fetchBrands'),
-            this.$store.dispatch('catalog/fetchCategories'),
-            this.$store.dispatch('catalog/fetchForms'),
-            this.$store.dispatch('catalog/fetchProductsAutocomplete'),
-            this.$store.dispatch('catalog/fetchManufactors'),
-            this.$store.dispatch('persons/fetchDrivers'),
-            this.$store.dispatch('persons/fetchEmployees'),
-            this.$store.dispatch('persons/fetchStoreEmployees'),
-            this.$store.dispatch('sales/customers/fetchCustomers'),
-            this.$store.dispatch('purchasing/fetchSuppliers'),
-            this.$store.dispatch('sales/webPortals/fetchPortals'),
-            this.$store.dispatch('pricing/fetchPriceRanges'),
-            this.$store.dispatch('statistics/sales/fetchSales'),
-            this.$store.dispatch('statistics/orders/fetchOrders'),
-            this.$store.dispatch('pricing/fetchUsd')
-          ]);
-        }
-        else if(this.$auth.loggedIn && this.managerRoles.indexOf(this.$auth.user.role) !== -1) {
-          await Promise.all([
-            this.$store.dispatch('sales/customers/fetchCustomers'),
-            this.$store.dispatch('statistics/sales/fetchSales'),
-            this.$store.dispatch('statistics/orders/fetchOrders'),
-            this.$store.dispatch('statistics/sales/fetchSales'),
-            this.$store.dispatch('statistics/orders/fetchOrders'),
-            this.$store.dispatch('pricing/fetchUsd')
-          ]);
-        }
-        else if(this.$auth.loggedIn && this.storeAdminRoles.indexOf(this.$auth.user.role) !== -1) {
-          await Promise.all([
-            this.$store.dispatch('persons/fetchDrivers'),
-            this.$store.dispatch('persons/fetchStoreEmployees'),
-            this.$store.dispatch('pricing/fetchUsd')
-          ]);
-          await this.$router.push('/store/assemblies');
-        }
-        else if(this.$auth.loggedIn && this.$auth.user.role === 'buh') {
-          await this.$store.dispatch('pricing/fetchUsd');
-          await this.$router.push('/store/deliveries');
-        }
-      }catch (error) {
-        this.errorMessages = 'Неверный логин или пароль';
+         try {
+            await this.$auth.loginWith("local", {
+               data: {
+                  login: this.email,
+                  password: this.password
+               }
+            });
+         }catch (error) {
+            console.log(error);
+         }
+
       }
     },
 
@@ -197,10 +134,9 @@ export default {
     resetErrors() {
       this.error = false
       this.errorMessages = ''
-
       this.errorProvider = false
       this.errorProviderMessages = ''
     }
   }
-}
+
 </script>

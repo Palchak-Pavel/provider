@@ -33,18 +33,18 @@ export const mutations = {
 }
 
 export const actions = {
-  async fetchOrders({commit, state}) {
-    const {data} = await this.$orderID.getOrders(state.supplierID);
+  async fetchOrders({commit}) {
+    const {data} = await this.$orderID.getOrders();
     commit('SET_ORDERS', data)
   },
 
-  async fetchShipments({commit, state}) {
-    const {data} = await this.$shipmentsID.getShipments(state.supplierID);
+  async fetchShipments({commit}) {
+    const {data} = await this.$shipmentsID.getShipments();
     commit('SET_SHIPMENTS', data)
   },
 
-  async fetchLeftovers({commit, state}) {
-    const {data} = await this.$leftoversID.getLeftovers(state.supplierID);
+  async fetchLeftovers({commit}) {
+    const {data} = await this.$leftoversID.getLeftovers();
     commit('SET_LEFTOVERS', data)
   },
 }
