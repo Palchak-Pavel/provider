@@ -77,7 +77,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters('orders', ['shipments'])
+    ...mapGetters('orders', ['shipments']),
   },
 
   methods: {

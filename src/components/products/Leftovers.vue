@@ -52,6 +52,7 @@
                          :enableCellTextSelection = "true"
                          :header-height = "50"
                          :row-height = "39"
+                         :cellButton = "cellButton"
                          @cell-value-changed = "updateLeftovers"
             >
             </ag-grid-vue>
@@ -75,6 +76,7 @@ export default {
       files: [],
       rowData: null,
       rowSelectionType: 'single',
+       cellButton: null,
       columnDefs: [
         {
           headerName: `${this.$t('catalog.productCode')}`,
@@ -88,6 +90,11 @@ export default {
           filter: 'agNumberColumnFilter',
           editable: true,
           cellClass: 'cell-wrap-text',
+           // valueGetter: function (params) {
+           //   if (this.storeQuantity < 0){
+           //      return console.log( 0)
+           //   }
+           // },
           valueParser: function (params) {
             return Number(params.newValue);
           },
@@ -96,12 +103,13 @@ export default {
           headerName: `${this.$t('ecommerce.price')}`,
           field: 'price',
           filter: true
-        }
+        },
+         {
+            cellRenderer: 'cellButton',
+         }
       ],
 
       defaultColDef: {
-        gridApi: null,
-        columnApi: null,
         flex: 1,
         sortable: true,
         filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] }
@@ -111,14 +119,38 @@ export default {
   computed: {
     ...mapGetters('orders', ['leftovers']),
   },
+beforeMount() {
 
-  methods: {
+   this.cellButton = (params)=> {
+      let cssClass;
+      let message;
+      if (params.node.rowPinned) {
+         cssClass = 'example-full-width-pinned-row';
+         message = 'Pinned full width row at index ' + params.rowIndex;
+      } else {
+         cssClass = 'example-full-width-row';
+         message = 'Normal full width row at index' + params.rowIndex;
+      }
+      const eDiv = document.createElement('div');
+      eDiv.innerHTML =
+        `'<div class="' +
+           cssClass +
+           '"><button>Click</button> ' +
+           message +
+           '</div>'`;
+      const eButton = eDiv.querySelector('button');
+      eButton.addEventListener('click', function () {
+         alert('button clicked');
+      });
+   }
+},
+
+   methods: {
     async getLeftovers() {
       await this.$store.dispatch('orders/fetchLeftovers');
     },
 
-     //TODO: не отправляются данные из редактируемой ячейки на сервер
-     //  исправил в api, должно работать
+
      //TODO: добавить валидацию: значение в ячейке не может быть меньще 0
     async updateLeftovers(value) {
       let payload = {
@@ -127,6 +159,7 @@ export default {
       };
       await this.$leftoversID.updateLeftovers(payload);
     },
+
 
      //TODO: не отправляются данные из парсера на сервер
     // ждать доработку
@@ -146,7 +179,7 @@ export default {
         await this.getLeftovers();
       }
     },
-  }
+  },
 }
 </script>
 

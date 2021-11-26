@@ -9,4 +9,8 @@ export default class OrderID {
   getOrders() {
     return this.axios.get(this.url)
   }
+
+  updateOrders(payload){
+    return this.axios.put(this.url, payload);
+  }
 }

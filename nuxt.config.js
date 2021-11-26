@@ -137,16 +137,9 @@ export default {
          callback: '/login',
          home: '/'
       },
-      //TODO: показывает страницы без авторизации
-      router: {
-         prefetchLinks: false,
-         middleware: ['auth']
-      }
    },
-   //TODO: НУЖНО БЫТЬ ВНИМАТЕЛЬНЕЕ. router - самостоятельный элемент конфига, а ты его в секцию auth добавил
-   // Закоментировать или удалить верхний router, раскоментировать этот - и все будет работать
-   // router: {
-   //    prefetchLinks: false,
-   //    middleware: ['auth']
-   // }
+   router: {
+      prefetchLinks: false,
+      middleware: ['auth']
+   }
 }
