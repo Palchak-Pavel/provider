@@ -31,12 +31,9 @@ export default {
    css: [
       '~/assets/scss/theme.scss',
       '~/assets/scss/btn-style.scss',
-      '../node_modules/ag-grid-community/dist/styles/ag-grid.css',
-      '../node_modules/ag-grid-community/dist/styles/ag-theme-balham.css',
-      '../node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css',
-      '../node_modules/ag-grid-community/dist/styles/ag-theme-blue.css',
-      '../node_modules/ag-grid-community/dist/styles/ag-theme-fresh.css',
-      '../node_modules/ag-grid-community/dist/styles/ag-theme-material.css'
+
+     '../node_modules/@bryntum/grid/grid.stockholm.css',
+     '../node_modules/@bryntum/demo-resources/scss/example.scss',
 
       // '@/node_modules/ag-grid-community/dist/styles/ag-grid.css',
       // '@/node_modules/ag-grid-community/dist/styles/ag-theme-alpine.css'
@@ -50,7 +47,6 @@ export default {
       { src: '~/plugins/apexcharts.js', mode: 'client' },
       { src: '~/plugins/clipboard.js', mode: 'client' },
       { src: '~/plugins/vue-shortkey.js', mode: 'client' },
-      { src: '~/plugins/ag_grid/ag-grid.orders.js', mode: 'client' },
       { src: '~/plugins/order.js' },
       { src: '~/plugins/shipments.js' },
       { src: '~/plugins/leftovers.js' },
@@ -60,7 +56,9 @@ export default {
       { src: '~/filters/lowercase.js' },
       { src: '~/filters/uppercase.js' },
       { src: '~/filters/formatCurrency.js' },
-      { src: '~/filters/formatDate.js' }
+      { src: '~/filters/formatDate.js' },
+
+      {src: '~/plugins/grid.js', mode: 'client'},
    ],
 
    // Auto import components (https://go.nuxtjs.dev/config-components)

@@ -136,6 +136,7 @@ export default {
         'addToCart': 'Добавить в корзину',
         'buyNow': 'купить сейчас',
         'price': 'Цена',
+        'sum': 'Сумма',
         'about': 'Об этом товаре',
         'description': 'Описание',
         'reviews': 'Отзывы',

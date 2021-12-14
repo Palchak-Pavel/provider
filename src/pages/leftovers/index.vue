@@ -1,6 +1,6 @@
 <template>
   <client-only>
-    <div>
+    <div style="width: 100%">
       <Leftovers />
     </div>
   </client-only>

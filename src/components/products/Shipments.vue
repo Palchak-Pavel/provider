@@ -1,92 +1,145 @@
 <template>
-  <v-col cols = "12">
-    <v-card flat>
-      <v-card-title>{{ $t('ecommerce.shipments') }}</v-card-title>
-      <v-card-text>
-        <client-only>
-          <v-btn class = "mr-1 mb-1 blue lighten-1 white--text" @click = "getShipments">{{ $t('common.refreshTable') }}</v-btn>
+  <v-card width="100%" height="85vh" id="container">
+    <v-card-title>{{ $t('ecommerce.shipments') }}</v-card-title>
+    <v-card-text>
+      <client-only>
+        <v-row class="pt-0 pb-0">
+          <v-col xs="6" class="pt-0 pb-0">
+            <template>
+              <v-btn small
+                     color="primary"
+                     dark
+                     @click="updateDeliveries">{{
+                  $t('common.refreshTable')
+                }}
+              </v-btn>
+            </template>
 
-          <v-card flat style = "width: 81.5vw; height: 80vh">
-            <ag-grid-vue style = "width: 100%; height: 90%;"
-                         class = "ag-theme-balham"
-                         :columnDefs = "columnDefs"
-                         :rowData = "shipments"
-                         :defaultColDef = "defaultColDef"
-                         :rowSelection = "rowSelectionType"
-                         :enableCellTextSelection = "true"
-                         :header-height = "50"
-                         :row-height = "39"
-            >
-            </ag-grid-vue>
-          </v-card>
-        </client-only>
-      </v-card-text>
-    </v-card>
-  </v-col>
+              <template >
+                <v-btn small
+                       color="primary"
+                       dark
+                       @click="exportGrid"
+                >
+                  Экспорт в Excel
+                </v-btn>
+              </template>
+
+            <bryntum-grid v-if="gridConfig" v-bind="gridConfig" ref="grid"/>
+
+          </v-col>
+        </v-row>
+      </client-only>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
-import 'ag-grid-enterprise'
-import { mapGetters } from 'vuex'
+import zipcelx from "zipcelx";
+import {mapGetters} from 'vuex'
 
 export default {
   data() {
     return {
-      rowData: null,
-      rowSelectionType: 'single',
-      columnDefs: [
-        {
-          headerName: `${this.$t('catalog.productCode')}`,
-          field: 'productCode',
-          filter: 'agSetColumnFilter'
+      deliveriesUploadDialog: false,
+      suppliers: [],
+      productsNotFound: [],
+      gridConfig: {
+        appendTo: 'container',
+        excelExporterFeature: {
+          filename: 'Прайс-лист',
+          // pass the export library to exporter feature
+          zipcelx
         },
-        {
-          headerName: `${this.$t('ecommerce.deliveryQuantity')}`,
-          field: 'deliveryQuantity',
-          filter: 'agSetColumnFilter'
-        },
-        {
-          headerName: `${this.$t('ecommerce.completeQuantity')}`,
-          field: 'completeQuantity',
-          filter: true
-        },
-        {
-          headerName: `${this.$t('catalog.creationDate')}`,
-          field: 'creationDate',
-          filter: 'agDateColumnFilter',
-          cellRenderer: (data) => {
-            return data.value ? (new Date(data.value)).toLocaleDateString() : '';
+        features: {
+          filterBar: {
+            compactMode: true,
           },
+          stripe: true,
+          quickFind: true
         },
-        {
-          headerName: `${this.$t('catalog.dueDate')}`,
-          field: 'dueDate',
-          filter: true,
-          cellRenderer: (data) => {
-            return data.value ? (new Date(data.value)).toLocaleDateString() : '';
-          },
-        }
-      ],
 
-      defaultColDef: {
-        flex: 1,
-        sortable: true,
-        filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] }
-      }
+        ripple: {
+          delegate: '.b-grid-header'
+        },
+        columns: [
+          {
+            text: `${this.$t('catalog.productCode')}`,
+            field: 'productCode',
+            flex: 1,
+            editor: false,
+          },
+
+          {
+            text: `${this.$t('ecommerce.deliveryQuantity')}`,
+            field: 'deliveryQuantity',
+            flex: 1,
+            type: 'number'
+          },
+          {
+            text: `${this.$t('ecommerce.completeQuantity')}`,
+            field: 'completeQuantity',
+            flex: 1,
+            type: 'number'
+          },
+          {
+            text: `${this.$t('catalog.creationDate')}`,
+            field: 'creationDate',
+            flex: 1,
+            type: 'date',
+            format: 'DD.MM.YYYY'
+          },
+
+          {
+            text: `${this.$t('catalog.dueDate')}`,
+            field: 'dueDate',
+            flex: 1,
+            editor: false
+          },
+        ],
+        data: [],
+        // listeners: {
+        //     finishCellEdit: this.updatePriceList
+        // }
+      },
     }
   },
 
-  computed: {
-    ...mapGetters('orders', ['shipments']),
+  async beforeMount() {
+    await this.getData();
   },
 
   methods: {
-    async getShipments() {
-      await this.$store.dispatch('orders/fetchShipments');
-    }
+
+    async getData() {
+      const {data} = await this.$axios.get('plan/deliveries');
+      data.forEach(x => {
+        x.creationDate = new Date(x.creationDate)
+      });
+      this.gridConfig.data = data;
+    },
+
+    async updateDeliveries(event) {
+      let payload = event.editorContext.record.data;
+      const response = await this.$axios.put('/plan/deliveries', payload);
+    },
+
+    exportGrid() {
+      const {
+        instance: {
+          features: {excelExporter}
+        }
+      } = this.$refs.grid;
+      excelExporter.export();
+    },
   }
 }
 </script>
 
-<style>
+<style scoped>
+
+#container {
+  height: 77vh;
+}
+
 </style>

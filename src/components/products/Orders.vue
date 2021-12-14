@@ -1,235 +1,293 @@
 <template>
-   <v-col cols = "12">
-      <v-card flat>
-         <v-card-title>{{ $t('dashboard.orders') }}</v-card-title>
-         <v-card-text>
-            <client-only>
-               <v-btn class = "mr-1 mb-1 blue lighten-1 white--text" @click = "getOrders">{{
-                     $t('common.refreshTable')
-                                                                                          }}
-               </v-btn>
+  <v-card width="100%" height="85vh" id="container">
+    <v-card-title>{{ $t('dashboard.orders') }}</v-card-title>
+    <v-card-text height="100%">
+      <div class="toolbar">
 
-               <v-btn
-                 class = "mr-1 mb-1 blue lighten-1 white--text"
+          <template>
+            <v-btn small
+                   color="primary"
+                   dark
+                   @click="updateOrder"
+            >
+              {{ $t('common.refreshTable') }}
+            </v-btn>
+          </template>
+
+          <template>
+          <v-btn small
+                 color="primary"
                  dark
-                 @click = "dialog = true"
-               >
-                  {{ $t('common.uploadFile') }}
-               </v-btn>
+                 @click="ordersUploadDialog = true"
+          >
+            {{ $t('common.uploadFile') }}
+          </v-btn>
+          </template>
 
-               <v-dialog
-                 v-model = "dialog"
-                 max-width = "500px"
-               >
-                  <v-card>
-                     <v-file-input
-                       v-model = "files"
-                       color = "blue lighten-1"
-                       class = "pl-2 pt-2 pr-2"
-                       label = "Выберите файл"
-                       prepend-icon = "mdi-paperclip"
-                       outlined
-                       :show-size = "1000"
-                       @change = "onFileChange"
-                     >
-                     </v-file-input>
+          <template>
+            <v-btn small
+                   color="primary"
+                   dark
+                   @click="exportGrid">
+              Экспорт в Excel
+            </v-btn>
+          </template>
+      </div>
 
-                     <v-card-actions>
-                        <v-spacer></v-spacer>
-                        <v-btn
-                          class = "ml-1 mb-1 blue lighten-1 white--text"
-                          @click = "dialog = false"
-                        >
-                           Закрыть
-                        </v-btn>
-                     </v-card-actions>
-                  </v-card>
-               </v-dialog>
 
-                <!-- События должны ссылаться на методы/функции, а не на поля из data. Так делать не надо. -->
-<!--               <v-btn @click = "localeTextFunc" color = "primary">-->
-<!--                  RU-->
-<!--               </v-btn>-->
+      <v-dialog v-model="ordersUploadDialog"
+                max-width="500px"
+      >
+        <v-card>
+          <v-toolbar>
+            <v-toolbar-title>Загрузка заказа из файла</v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-toolbar-items>
+              <v-btn icon @click.native="ordersUploadDialog = false">
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-toolbar-items>
+          </v-toolbar>
+          <FileParser @fileChange="uploadOrders"/>
+          <ProductsNotFound v-if="productsNotFound" title="Не найдена номенклатура" :products="productsNotFound"/>
+          <ProductsNotFound v-if="productsInPriceNotFound" title="Не найдено в прайсе поставщика" :products="productsInPriceNotFound"/>
+        </v-card>
+      </v-dialog>
 
-               <v-card flat>
-                  <ag-grid-vue style = "width: 80vw; height: 70vh;"
-                               class = "ag-theme-balham"
-                               :columnDefs = "columnDefs"
-                               :rowData = "orders"
-                               :defaultColDef = "defaultColDef"
-                               :rowSelection = "rowSelectionType"
-                               :enableCellTextSelection = "true"
-                               :header-height = "50"
-                               :row-height = "40"
-                               :localeText = "agGridLocale"
-                               :suppressClickEdit="true"
-                               :frameworkComponents="frameworkComponents"
-                               @cell-value-changed = "updateOrders"
-                  >
-                  </ag-grid-vue>
-               </v-card>
-            </client-only>
-         </v-card-text>
+      <v-card flat>
+        <bryntum-grid v-bind="gridConfig" ref="grid"/>
       </v-card>
-   </v-col>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
-import 'ag-grid-enterprise'
-import { mapGetters } from 'vuex'
-import { funcTarget, parseTwoColumns } from '~/js/parser'
-import { AG_GRID_LOCALE_RU } from '../../js/translations/ruAgGrid'
-import {AG_GRID_LOCALE_EN} from '../../js/translations/default-locale-aggrid'
-import OrderID from '../../js/services/orderID'
-import BtnCellRenderer from "../../js/btn-cell-renderer.js";
+
+import zipcelx from 'zipcelx';
+import FileParser from "../../components/upload/FileParser";
+import {funcTarget, parseReadinessDates, parseThreeColumns} from "../../js/parser";
+import ProductsNotFound from "../../components/upload/ProductsNotFound";
+import OrdersNotFound from "../../components/upload/OrdersNotFound";
+import {CurrencyTypes} from "../../js/enums";
+import {numberFormat, usdFormat, rubFormat} from "../../js/numberFormats";
 
 export default {
-   data() {
-      return {
-         orders: [],
-         dialog: false,
-         files: [],
-         rowData: null,
-         rowSelectionType: 'single',
-         cellRenderer: null,
-         cellButton: null,
-         frameworkComponents: null,
-         columnDefs: [
-            {
-               headerName: `${this.$t('catalog.productCode')}`,
-               field: 'productCode',
-               filter: 'agSetColumnFilter'
+  components: {OrdersNotFound, ProductsNotFound, FileParser},
 
-            },
-            {
-               headerName: `${this.$t('ecommerce.orderQuantity')}`,
-               field: 'orderQuantity',
-               filter: 'agSetColumnFilter'
-            },
-            {
-               headerName: `${this.$t('ecommerce.completeQuantity')}`,
-               field: 'completeQuantity', // <--------------- Редактируемые ячейки
-               filter: true,
-               editable: true,
-               cellClass: 'cell-wrap-text',
-               valueParser: function (params) {
-                  return Number(params.newValue);
-               },
-            },
-            {
-               headerName: `${this.$t('ecommerce.price')}`,
-               field: 'price',
-               filter: true
-            },
-            {
-               headerName: `${this.$t('catalog.creationDate')}`,
-               field: 'creationDate',
-               filter: 'agDateColumnFilter',
-               cellRenderer: (data) => {
-                  return data.value ? (new Date(data.value)).toLocaleDateString() : ''
-               }
-            },
-            {
-               headerName: `${this.$t('catalog.readinessDate')}`,
-               field: 'readinessDate', // <-------------------  Редактируемые ячейки
-               filter: true,
-               editable: true,
-               cellClass: 'cell-wrap-text',
-               cellRenderer: (data) => {
-                  return data.value ? (new Date(data.value)).toLocaleDateString() : ''
-               }
-            },
-            {
-               field: "Выполнено",
-               cellRenderer: "btnCellRenderer",// <------------ Кнопка "Выполнено"
-               cellRendererParams: {
-                  clicked: function() {
-                     alert( 'was clicked');
-                  }
-               },
-               minWidth: 150
+  data() {
+    return {
+      dialog: false,
+      ordersUploadDialog: false,
+      ordersFullUploadDialog: false,
+      ordersReadinessUploadDialog: false,
+      productsNotFound: null,
+      ordersNotFound: null,
+      productsInPriceNotFound: null,
+      gridConfig: {
+        appendTo: 'container',
+        excelExporterFeature: {
+          filename: 'Текущий заказ на производство ' + new Date().toLocaleDateString(),
+          // pass the export library to exporter feature
+          zipcelx
+        },
+        features: {
+          filterBar: {
+            compactMode: true,
+          },
+          group: {
+            field: 'supplier',
+          },
+          groupSummary: {
+            collapseToHeader: false
+          },
+          stripe: true,
+          quickFind: true
+        },
+
+        ripple: {
+          delegate: '.b-grid-header'
+        },
+        columns: [
+          {
+            text: `${this.$t('catalog.productCode')}`,
+            field: 'productCode',
+            width: 150,
+            editor: false
+          },
+          {
+            text: `${this.$t('ecommerce.orderQuantity')}`,
+            field: 'orderQuantity',
+            type: 'number',
+            width: 130,
+            renderer: (renderData) => {
+              return numberFormat.format(renderData.value);
             }
-         ],
-
-         defaultColDef: {
-            minWidth: 130,
+          },
+          {
+            text: `${this.$t('ecommerce.completeQuantity')}`,
+            field: 'completeQuantity',
+            type: 'number',
             flex: 1,
-            sortable: true,
-            filterParams: { applyMiniFilterWhileTyping: true, buttons: ['clear', 'apply'] }
-         },
-
-      }
-   },
-
-   computed: {
-      // ...mapGetters('orders', ['orders']),
-
-      // TODO: сделать computed для locale и передать его в localeText
-      // Правильным решением будет убрать это свойство в store, чтобы не высчитывать на каждой странице
-      agGridLocale() {
-         return this.$vuetify.lang.current === 'ru' ? AG_GRID_LOCALE_RU : AG_GRID_LOCALE_EN;
-      },
-
-
-   },
-
-   async beforeMount() {
-      const { data } = await this.$orderID.getOrders();
-      this.orders = data
-
-      this.frameworkComponents = {
-         btnCellRenderer: BtnCellRenderer
-      };
-      // this.cellButton = ()=> {
-      //    const eDiv = document.createElement('div');
-      //    eDiv.innerHTML =
-      //      `'<div class="' +
-      //      cssClass +
-      //      '"><button>Click</button> ' +
-      //      message +
-      //      '</div>'`;
-      //    const eButton = eDiv.querySelector('button');
-      //    eButton.addEventListener('click', function () {
-      //       alert('button clicked');
-      //    });
-      // }
-   },
-
-   methods: {
-      async getOrders() {
-         await this.$store.dispatch('orders/fetchOrders')
-      },
-
-      // TODO: добавить метод обновления заказа.
-      async updateOrders(value) {
-         try {
-            await this.$orderID.updateOrders(value);
-
-         } catch (error) {
-            console.log(error);
-         }
-      },
-
-      async onFileChange(e) {
-         if (e) {
-            let parsedItems = await funcTarget(e, parseTwoColumns)
-            let items = parsedItems.map(x => ({
-               productCode: x.productCode,
-               storeQuantity: x.productCount
-            }))
-            let payload = {
-               supplierID: 3,
-               supplierRestChanges: items,
-               download: true
+            renderer: (renderData) => {
+              return numberFormat.format(renderData.value);
             }
-            await this.$leftoversID.createLeftovers(payload)
-            await this.getLeftovers()
-         }
+          },
+          {
+            text: 'Не выполнено, шт.',
+            type: 'number',
+            flex: 1,
+            editor: false,
+            renderer: (renderData) => {
+              const record = renderData.record;
+              let value = record.orderQuantity - record.completeQuantity;
+              return numberFormat.format(value);
+            },
+            sum: (result, current, index) => {
+              if (index === 0) result = current.orderQuantity - current.completeQuantity;
+              else result += (current.orderQuantity - current.completeQuantity);
+              return result;
+            },
+            summaryRenderer: ({sum}) => {
+              return numberFormat.format(sum);
+            }
+          },
+          {
+            text: `${this.$t('ecommerce.price')}`,
+            field: 'price',
+            width: 120,
+            type: 'number',
+            renderer: (renderData) => {
+              const record = renderData.record;
+              return record.currencyTypeID == CurrencyTypes.USD ? usdFormat.format(renderData.value) : rubFormat.format(renderData.value)
+            }
+          },
+          {
+            text: 'Не вып., сумма',
+            flex: 1,
+            editor: false,
+            sum: (result, current, index) => {
+              if (index === 0) result = {
+                sum: (current.orderQuantity - current.completeQuantity) * current.price,
+                currencyType: current.currencyTypeID
+              };
+              else result.sum += (current.orderQuantity - current.completeQuantity) * current.price;
+              return result;
+            },
+            summaryRenderer: ({sum}) => {
+              console.log(sum);
+              return sum.currencyType === CurrencyTypes.USD ? usdFormat.format(sum.sum) : rubFormat.format(sum.sum);
+            },
+            renderer: (renderData) => {
+              const record = renderData.record;
+              let value = (record.orderQuantity - record.completeQuantity) * record.price;
+              return record.currencyTypeID == CurrencyTypes.USD ? usdFormat.format(value) : rubFormat.format(value);
+            }
+          },
+          {
+            text: `${this.$t('catalog.creationDate')}`,
+            field: 'creationDate',
+            width: 140,
+            type: 'date',
+            format: 'DD.MM.YYYY'
+          },
+          {
+            text: `${this.$t('catalog.readinessDate')}`,
+            field: 'readinessDate',
+            flex: 1,
+            type: 'date',
+            format: 'DD.MM.YYYY'
+          },
+          {
+            text: 'Просрочено, дн.',
+            field: 'readinessDate',
+            flex: 1,
+            type: "number",
+            editor: false,
+            renderer: (renderData) => {
+              const record = renderData.record;
+              if (record.readinessDate === null) return '-';
+              return Math.round((new Date() - record.readinessDate) / (1000 * 60 * 60 * 24))
+            }
+          },
+          {
+            text: '',
+            width: 150,
+            type: 'widget',
+            cellCls: 'completeQuantity',
+            widgets: [{
+              type: 'button',
+              text: 'Выполнено',
+              flex: 1,
+              cls: 'b-blue b-raised',
+              renderer({record, widgets}) {
+                // Hide checkboxes in certain rows
+                widgets[0].hidden = record.orderQuantity === record.completeQuantity;
+              },
+              onAction: async ({source: btn}) => {
+                btn.cellInfo.record.completeQuantity = btn.cellInfo.record.orderQuantity;
+                const response = await this.$axios.put("plan/orders", btn.cellInfo.record);
+              }
+            }]
+          }
+        ],
+        data: [],
+        listeners: {
+          finishCellEdit: this.updateOrder
+        }
       }
-   },
-}
+    }
+  },
 
+  async beforeMount() {
+    await this.getOrders();
+  },
+
+  methods: {
+    exportGrid() {
+      const {
+        instance: {
+          features: {excelExporter}
+        }
+      } = this.$refs.grid;
+      excelExporter.export();
+    },
+
+    async getOrders() {
+      const {data} = await this.$axios.get("plan/orders");
+      data.forEach(x => {
+        x.creationDate = new Date(x.creationDate);
+        x.readinessDate = isNaN(Date.parse(x.readinessDate)) ? null : new Date(x.readinessDate)
+      });
+      this.gridConfig.data = data;
+    },
+
+    // TODO: Не работает кнопка обновления таблицы
+    async updateOrder(event) {
+      let payload = event.editorContext.record.data;
+      const response = await this.$axios.put("plan/orders", payload);
+    },
+
+    async uploadOrders(event) {
+      let params = {codeColNum: 0, countColNum: 1, priceColNum: 2};
+      let result = await funcTarget(event.fileChangeEvent, parseThreeColumns, params);
+      const response = await this.$axios.post('plan/orders', {
+        supplierID: event.supplierID,
+        orders: result
+      });
+
+      if (response.status === 200) {
+        this.productsNotFound = response.data.productsNotFound;
+        this.productsInPriceNotFound = response.data.ordersNotFound;
+        await this.getOrders();
+      }
+    },
+  },
+}
 </script>
 
-<style>
+<style scoped>
+#container {
+  height: 77vh;
+}
 </style>
+

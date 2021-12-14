@@ -1,6 +1,6 @@
 <template>
   <client-only>
-    <div>
+    <div style="width: 100%">
       <Shipments />
     </div>
   </client-only>

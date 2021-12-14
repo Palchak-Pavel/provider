@@ -76,4 +76,55 @@ function parseTwoColumns(reader) {
     return result;
 }
 
-export {funcTarget, parseThreeColumns, parseTwoColumns};
+function parseReadinessDates(reader, params) {
+    let codeColNum = params.codeColNum, // колонки таблицы
+        orderQuantityColNum = params.orderQuantityColNum,
+        notCompleteColNum = params.notCompleteColNum,
+        creationDateColNum = params.creationDateColNum,
+        readinessDateColNum = params.readinessDateColNum;
+    let rows = globalVar(reader);
+    let result = [];
+    for (let i = 0; i < rows.length; i++) {
+        let currentRow = rows[i];
+        let orderQuantity = parseInt(currentRow[orderQuantityColNum]);
+        let notCompleteQuantity = parseInt(currentRow[notCompleteColNum]);
+        let creationDate = currentRow[creationDateColNum];
+        let readinessDate = currentRow[readinessDateColNum];
+        if(!isNaN(orderQuantity) && !isNaN(notCompleteQuantity) && !isNaN(Date.parse(creationDate))) {
+            result.push({
+                productCode: currentRow[codeColNum],
+                orderQuantity: orderQuantity,
+                completeQuantity: orderQuantity - notCompleteQuantity,
+                creationDate: new Date(creationDate),
+                readinessDate: isNaN(Date.parse(readinessDate)) ? null : new Date(readinessDate)
+            })
+        }
+    }
+    return result;
+}
+
+function parsePriceList(reader) {
+    let codeColNum = 0, priceColNum = 1, moqColNum = 2, productionTimeColNum = 3, commentColNum = 4;
+    let rows = globalVar(reader);
+    let result = [];
+    for (let i = 0; i < rows.length; i++) {
+        let currentRow = rows[i];
+        let moq = parseInt(currentRow[moqColNum]);
+        let productionTime = parseInt(currentRow[productionTimeColNum]);
+        let priceVal = currentRow[priceColNum];
+        let price = 0;
+        if(priceVal) price = parseFloat(priceVal.toString().replace(/\s/g, ''));
+        if(!isNaN(moq) && !isNaN(productionTime) && !isNaN(price)) {
+            result.push({
+                productCode: currentRow[codeColNum],
+                price: price,
+                moq: moq,
+                productionTime: productionTime,
+                comment: currentRow[commentColNum]
+            });
+        }
+    }
+    return result;
+}
+
+export {funcTarget, parseThreeColumns, parseTwoColumns, parseReadinessDates, parsePriceList};
