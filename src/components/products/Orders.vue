@@ -15,16 +15,6 @@
           </template>
 
           <template>
-          <v-btn small
-                 color="primary"
-                 dark
-                 @click="ordersUploadDialog = true"
-          >
-            {{ $t('common.uploadFile') }}
-          </v-btn>
-          </template>
-
-          <template>
             <v-btn small
                    color="primary"
                    dark
@@ -33,26 +23,6 @@
             </v-btn>
           </template>
       </div>
-
-
-      <v-dialog v-model="ordersUploadDialog"
-                max-width="500px"
-      >
-        <v-card>
-          <v-toolbar>
-            <v-toolbar-title>Загрузка заказа из файла</v-toolbar-title>
-            <v-spacer></v-spacer>
-            <v-toolbar-items>
-              <v-btn icon @click.native="ordersUploadDialog = false">
-                <v-icon>mdi-close</v-icon>
-              </v-btn>
-            </v-toolbar-items>
-          </v-toolbar>
-          <FileParser @fileChange="uploadOrders"/>
-          <ProductsNotFound v-if="productsNotFound" title="Не найдена номенклатура" :products="productsNotFound"/>
-          <ProductsNotFound v-if="productsInPriceNotFound" title="Не найдено в прайсе поставщика" :products="productsInPriceNotFound"/>
-        </v-card>
-      </v-dialog>
 
       <v-card flat>
         <bryntum-grid v-bind="gridConfig" ref="grid"/>
@@ -64,25 +34,13 @@
 <script>
 
 import zipcelx from 'zipcelx';
-import FileParser from "../../components/upload/FileParser";
-import {funcTarget, parseReadinessDates, parseThreeColumns} from "../../js/parser";
-import ProductsNotFound from "../../components/upload/ProductsNotFound";
-import OrdersNotFound from "../../components/upload/OrdersNotFound";
 import {CurrencyTypes} from "../../js/enums";
 import {numberFormat, usdFormat, rubFormat} from "../../js/numberFormats";
 
 export default {
-  components: {OrdersNotFound, ProductsNotFound, FileParser},
 
   data() {
     return {
-      dialog: false,
-      ordersUploadDialog: false,
-      ordersFullUploadDialog: false,
-      ordersReadinessUploadDialog: false,
-      productsNotFound: null,
-      ordersNotFound: null,
-      productsInPriceNotFound: null,
       gridConfig: {
         appendTo: 'container',
         excelExporterFeature: {
@@ -267,20 +225,6 @@ export default {
       const response = await this.$axios.put("plan/orders", payload);
     },
 
-    async uploadOrders(event) {
-      let params = {codeColNum: 0, countColNum: 1, priceColNum: 2};
-      let result = await funcTarget(event.fileChangeEvent, parseThreeColumns, params);
-      const response = await this.$axios.post('plan/orders', {
-        supplierID: event.supplierID,
-        orders: result
-      });
-
-      if (response.status === 200) {
-        this.productsNotFound = response.data.productsNotFound;
-        this.productsInPriceNotFound = response.data.ordersNotFound;
-        await this.getOrders();
-      }
-    },
   },
 }
 </script>
