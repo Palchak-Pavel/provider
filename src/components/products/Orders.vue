@@ -90,25 +90,7 @@ export default {
               return numberFormat.format(renderData.value);
             }
           },
-          {
-            text: 'Не выполнено, шт.',
-            type: 'number',
-            flex: 1,
-            editor: false,
-            renderer: (renderData) => {
-              const record = renderData.record;
-              let value = record.orderQuantity - record.completeQuantity;
-              return numberFormat.format(value);
-            },
-            sum: (result, current, index) => {
-              if (index === 0) result = current.orderQuantity - current.completeQuantity;
-              else result += (current.orderQuantity - current.completeQuantity);
-              return result;
-            },
-            summaryRenderer: ({sum}) => {
-              return numberFormat.format(sum);
-            }
-          },
+
           {
             text: `${this.$t('ecommerce.price')}`,
             field: 'price',
@@ -119,28 +101,7 @@ export default {
               return record.currencyTypeID == CurrencyTypes.USD ? usdFormat.format(renderData.value) : rubFormat.format(renderData.value)
             }
           },
-          {
-            text: 'Не вып., сумма',
-            flex: 1,
-            editor: false,
-            sum: (result, current, index) => {
-              if (index === 0) result = {
-                sum: (current.orderQuantity - current.completeQuantity) * current.price,
-                currencyType: current.currencyTypeID
-              };
-              else result.sum += (current.orderQuantity - current.completeQuantity) * current.price;
-              return result;
-            },
-            summaryRenderer: ({sum}) => {
-              console.log(sum);
-              return sum.currencyType === CurrencyTypes.USD ? usdFormat.format(sum.sum) : rubFormat.format(sum.sum);
-            },
-            renderer: (renderData) => {
-              const record = renderData.record;
-              let value = (record.orderQuantity - record.completeQuantity) * record.price;
-              return record.currencyTypeID == CurrencyTypes.USD ? usdFormat.format(value) : rubFormat.format(value);
-            }
-          },
+
           {
             text: `${this.$t('catalog.creationDate')}`,
             field: 'creationDate',
@@ -154,18 +115,6 @@ export default {
             flex: 1,
             type: 'date',
             format: 'DD.MM.YYYY'
-          },
-          {
-            text: 'Просрочено, дн.',
-            field: 'readinessDate',
-            flex: 1,
-            type: "number",
-            editor: false,
-            renderer: (renderData) => {
-              const record = renderData.record;
-              if (record.readinessDate === null) return '-';
-              return Math.round((new Date() - record.readinessDate) / (1000 * 60 * 60 * 24))
-            }
           },
           {
             text: '',
@@ -221,8 +170,10 @@ export default {
 
     // TODO: Не работает кнопка обновления таблицы
     async updateOrder(event) {
+      // event.editorContext = undefined;
       let payload = event.editorContext.record.data;
       const response = await this.$axios.put("plan/orders", payload);
+console.log(this.event)
     },
 
   },
