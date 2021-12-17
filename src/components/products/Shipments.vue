@@ -119,6 +119,7 @@ export default {
       this.gridConfig.data = data;
     },
 
+    // TODO: При нажатии на кнопку обновления страницы выдаёт ошибку (Cannot read properties of undefined (reading 'record'))
     async updateDeliveries(event) {
       let payload = event.editorContext.record.data;
       const response = await this.$axios.put('/plan/deliveries', payload);
