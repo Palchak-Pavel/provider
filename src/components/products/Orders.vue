@@ -168,12 +168,10 @@ export default {
       this.gridConfig.data = data;
     },
 
-    // TODO: Не работает кнопка обновления таблицы
+    // TODO: Не работает кнопка обновления таблицы (Cannot read properties of undefined (reading 'record'))
     async updateOrder(event) {
-      // event.editorContext = undefined;
       let payload = event.editorContext.record.data;
       const response = await this.$axios.put("plan/orders", payload);
-console.log(this.event)
     },
 
   },
@@ -181,6 +179,7 @@ console.log(this.event)
 </script>
 
 <style scoped>
+
 #container {
   height: 77vh;
 }
